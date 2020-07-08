@@ -1,5 +1,5 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getConnection } from '../database.js'
+import { getProducts, insertProduct } from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -57,11 +57,14 @@ app.on('activate', () => {
   }
 })
 
-ipcMain.on('some-message', (event, arg) => {
-  BrowserWindow.getFocusedWindow().maximize()
+/** Code for managing SQL requests and responses */
+ipcMain.on('call-get-products', async (event, arg) => {
+  const result = await getProducts()
+  console.log({ result, arg })
+  event.reply('response-test-connection', result)
 })
 
-ipcMain.on('nunca', (event, arg) => {
-  const conn = getConnection()
-  console.log(conn)
+ipcMain.on('call-insert-products', async (event, product) => {
+  const result = await insertProduct(product)
+  event.reply('response-insert-products', result)
 })
