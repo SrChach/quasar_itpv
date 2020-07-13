@@ -40,6 +40,10 @@
           <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
         </div>
       </q-form>
+      <div>
+        <h4>Datos de BD(Requiere dump de ITPV y configuracion de src-electron.database.js):</h4><br>
+        <pre>{{ retrieved_products }}</pre>
+      </div>
     </div>
     <h3 v-else>
       Este módulo solo funciona en escritorio
@@ -55,14 +59,18 @@ export default {
         name: null,
         price: null,
         description: null
-      }
+      },
+      retrieved_products: null
     }
   },
   created () {
+    const instance = this
+
     if (this.$q.platform.is.electron) {
       this.$q.electron.ipcRenderer.send('call-get-products', 'some message')
       this.$q.electron.ipcRenderer.on('response-test-connection', (event, arg) => {
         console.log({ event, arg })
+        instance.retrieved_products = arg
       })
     }
   },

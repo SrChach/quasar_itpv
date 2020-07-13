@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+
+  quasar:
+    build:
+      context: .
+    ports:
+      - "8082:8080"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["quasar", "dev", "-m", "electron"]

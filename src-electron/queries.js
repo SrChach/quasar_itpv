@@ -1,14 +1,18 @@
 const { getConnection } = require('./database.js')
 
+let conn = null
+
 /** SELECT example */
 const getProducts = async () => {
-  const conn = await getConnection()
-  const result = await conn.query('SELECT * FROM product')
+  if (conn === null)
+    conn = await getConnection()
+  const result = await conn.query('SELECT * FROM products')
   return result
 }
 
 const insertProduct = async (product) => {
-  const conn = await getConnection()
+  if (conn === null)
+    conn = await getConnection()
   product.price = parseFloat(product.price)
   const result = await conn.query('INSERT INTO product set ?', product)
   return result
