@@ -1,49 +1,8 @@
 <template>
   <q-page class="flex flex-center justify-center">
     <div class="q-pa-md" style="max-width: 400px" v-if="$q.platform.is.electron">
-      <q-form
-        @submit="save_product"
-        @reset="onReset"
-        class="q-gutter-md"
-      >
-        <q-input
-          filled
-          v-model="product.name"
-          label="Nombre del producto *"
-          hint="Producto"
-          lazy-rules
-          :rules="[ val => val && val.length > 0 || 'Escribe un nombre' ]"
-        />
-
-        <q-input
-          filled
-          type="number"
-          v-model="product.price"
-          label="Precio *"
-          lazy-rules
-          :rules="[
-            val => val !== null && val !== '' || 'Inserta un precio',
-            val => val > 0 && val < 10000 || 'Inserta un precio válido'
-          ]"
-        />
-
-        <q-input
-          filled
-          v-model="product.description"
-          label="Descripcion del producto *"
-          lazy-rules
-          :rules="[ val => val && val.length > 0 || 'Escribe una descripcion']"
-        />
-
-        <div>
-          <q-btn label="Submit" type="submit" color="primary"/>
-          <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
-        </div>
-      </q-form>
-      <div>
-        <h4>Datos de BD(Requiere dump de ITPV y configuracion de src-electron.database.js):</h4><br>
-        <pre>{{ retrieved_products }}</pre>
-      </div>
+      <h4>Datos de BD(Requiere dump de ITPV y configuracion de src-electron.database.js):</h4><br>
+      <pre>{{ retrieved_products }}</pre>
     </div>
     <h3 v-else>
       Este módulo solo funciona en escritorio
@@ -90,12 +49,6 @@ export default {
           message: 'Submitted'
         })
       })
-    },
-
-    onReset () {
-      this.product.name = null
-      this.product.price = null
-      this.product.description = null
     }
   }
 }
