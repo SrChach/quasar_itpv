@@ -64,17 +64,21 @@ export default {
     }
   },
   created () {
-    const instance = this
-
     if (this.$q.platform.is.electron) {
       this.$q.electron.ipcRenderer.send('call-get-products', 'some message')
-      this.$q.electron.ipcRenderer.on('response-test-connection', (event, arg) => {
-        console.log({ event, arg })
-        instance.retrieved_products = arg
-      })
+      this.$q.electron.ipcRenderer.on('response-test-connection', this.list_products)
+    }
+  },
+  beforeDestroy () {
+    if (this.$q.platform.is.electron) {
+      this.$q.electron.ipcRenderer.removeListener('response-test-connection', this.list_products)
     }
   },
   methods: {
+    list_products (event, res) {
+      console.log({ event, res })
+      this.retrieved_products = res
+    },
     save_product () {
       const product = JSON.parse(JSON.stringify(this.product))
       this.$q.electron.ipcRenderer.send('call-insert-products', product)
