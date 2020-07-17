@@ -1,4 +1,6 @@
 const { getConnection } = require('./database.js')
+const SHA1 = require('crypto-js/sha1')
+const Hex = require('crypto-js/enc-hex')
 
 let conn = null
 
@@ -10,6 +12,15 @@ const getProducts = async () => {
   return result
 }
 
+const checkAdminUser = async (pass = '') => {
+  if (conn === null)
+    conn = await getConnection()
+    const encryped = SHA1(pass).toString(Hex).toUpperCase()
+    const res = await conn.query(`SELECT * FROM people WHERE ID = 0 AND APPPASSWORD='sha1:${encryped}'`)
+    return res
+}
+
+/** Old app */
 const insertProduct = async (product) => {
   if (conn === null)
     conn = await getConnection()
@@ -18,4 +29,4 @@ const insertProduct = async (product) => {
   return result
 }
 
-module.exports = { getProducts, insertProduct }
+module.exports = { getProducts, insertProduct, checkAdminUser }

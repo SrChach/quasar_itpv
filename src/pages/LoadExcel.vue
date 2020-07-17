@@ -69,7 +69,6 @@ export default {
           header: 1
         })
         some.parsedData = json
-        console.log(some.parsedData)
       }
 
       /** Leemos el archivo (Manda a llamar a la función) */

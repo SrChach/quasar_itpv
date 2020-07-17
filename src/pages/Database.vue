@@ -35,7 +35,6 @@ export default {
   },
   methods: {
     list_products (event, res) {
-      console.log({ event, res })
       this.retrieved_products = res
     },
     save_product () {

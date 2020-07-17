@@ -23,6 +23,9 @@
         </div>
       </q-form>
     </div>
+    <div class="q-pa-md" v-else>
+      <h4>Lo sentimos, esta aplicación está diseñada solo para Escritorio y Móvil</h4>
+    </div>
   </q-page>
 </template>
 
@@ -33,14 +36,37 @@ export default {
       password: null
     }
   },
+  created () {
+    if (!localStorage.getItem('hashed-pwd') && this.$q.platform.is.electron) {
+      this.$q.electron.ipcRenderer.on('response-check-admin', this.get_auth_user)
+    }
+  },
+  beforeDestroy () {
+    if (this.$q.platform.is.electron) {
+      this.$q.electron.ipcRenderer.removeListener('response-check-admin', this.get_auth_user)
+    }
+  },
   methods: {
-    check_credentials () {
-      this.$q.notify({
-        color: 'green-4',
+    get_auth_user (event, res) {
+      const options = {
+        color: 'red-4',
         textColor: 'white',
-        icon: 'cloud_done',
-        message: `Contraseña: "${this.password}"`
-      })
+        icon: 'report_problem',
+        message: 'incorrect password'
+      }
+
+      if (res.length === 1) {
+        options.color = 'green-4'
+        options.icon = 'cloud_done'
+        options.message = 'Founded!'
+        const encrypted = res[0].APPPASSWORD
+        localStorage.setItem('secure-key', encrypted)
+      }
+      this.$q.notify(options)
+    },
+
+    check_credentials () {
+      this.$q.electron.ipcRenderer.send('call-check-admin', this.password)
     },
 
     onReset () {

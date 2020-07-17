@@ -1,5 +1,5 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getProducts, insertProduct } from '../queries.js'
+import { getProducts, insertProduct, checkAdminUser } from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -60,11 +60,15 @@ app.on('activate', () => {
 /** Code for managing SQL requests and responses */
 ipcMain.on('call-get-products', async (event, arg) => {
   const result = await getProducts()
-  console.log({ result, arg })
   event.reply('response-test-connection', result)
 })
 
 ipcMain.on('call-insert-products', async (event, product) => {
   const result = await insertProduct(product)
   event.reply('response-insert-products', result)
+})
+
+ipcMain.on('call-check-admin', async (event, password) => {
+  const result = await checkAdminUser(password)
+  event.reply('response-check-admin', result)
 })
