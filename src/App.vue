@@ -13,6 +13,7 @@ export default {
   created () {
     const shaCode = localStorage.getItem('sha-code')
     this.$store.commit('security/setIsAuthenticated', shaCode)
+    this.$router.push('/')
   }
 }
 </script>
