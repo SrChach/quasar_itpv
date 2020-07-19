@@ -14,7 +14,7 @@ Vue.use(VueRouter)
  * with the Router instance.
  */
 
-export default function (/* { store, ssrContext } */) {
+export default function ({ store /* ,ssrContext */ }) {
   const Router = new VueRouter({
     scrollBehavior: () => ({ x: 0, y: 0 }),
     routes,
@@ -24,6 +24,19 @@ export default function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     mode: process.env.VUE_ROUTER_MODE,
     base: process.env.VUE_ROUTER_BASE
+  })
+
+  Router.beforeEach((to, from, next) => {
+    if (to.matched.some(record => record.meta.requiresAuth)) {
+      // Si no está autenticado, manda a una ruta
+      if (!store.getters['security/getIsAuthenticated']) {
+        next('/unauthenticated')
+      } else {
+        next() // Si lo está, lo deja pasar
+      }
+    } else {
+      next() // Si no requiere autenticación, asegúrate de siempre llamar a next()!
+    }
   })
 
   return Router

@@ -3,10 +3,23 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    meta: {
+      requiresAuth: true
+    },
     children: [
       { path: '', component: () => import('pages/Index.vue') },
       { path: 'carga', component: () => import('pages/LoadExcel.vue') },
+      { path: 'tickets', component: () => import('pages/TicketContent.vue') },
       { path: 'database', component: () => import('pages/Database.vue') }
+    ]
+  },
+  {
+    path: '/unauthenticated',
+    component: () => import('layouts/Unauthenticated.vue'),
+    name: 'unauthenticated',
+    children: [
+      { path: '', component: () => import('pages/Login.vue') },
+      { path: 'scripts', component: () => import('pages/Scripts.vue') }
     ]
   },
 

@@ -77,6 +77,18 @@ export default {
           caption: 'Test connection to database on frontend',
           icon: 'donut_small',
           link: '/database'
+        },
+        {
+          title: 'Cargar tickets',
+          caption: 'Load XML files',
+          icon: 'code',
+          link: '/tickets'
+        },
+        {
+          title: 'Logout',
+          caption: 'Exit from system',
+          icon: 'cancel',
+          link: '/unauthenticated'
         }
       ]
     }
