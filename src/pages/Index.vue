@@ -1,8 +1,8 @@
 <template>
   <q-page class="flex flex-center justify-center">
-    <div class="q-pa-md" v-if="$q.platform.is.electron">
-      <h2>ITPV - Login</h2>
-      <span><b>Nota:</b> Solo para uso del administrador</span>
+    <div class="q-pa-md">
+      <h2>ITPV - Login - {{ isAuthenticated }}</h2>
+      <span><b>Nota:</b> Solo para uso del administrador - {{ shaCode }}</span>
       <q-form
         @submit="check_credentials"
         @reset="onReset"
@@ -23,9 +23,6 @@
         </div>
       </q-form>
     </div>
-    <div class="q-pa-md" v-else>
-      <h4>Lo sentimos, esta aplicación está diseñada solo para Escritorio y Móvil</h4>
-    </div>
   </q-page>
 </template>
 
@@ -37,14 +34,11 @@ export default {
     }
   },
   created () {
-    if (!localStorage.getItem('hashed-pwd') && this.$q.platform.is.electron) {
-      this.$q.electron.ipcRenderer.on('response-check-admin', this.get_auth_user)
-    }
+    /** if !localStorage.getItem('hashed-pwd') &&  */
+    this.$q.electron.ipcRenderer.on('response-check-admin', this.get_auth_user)
   },
   beforeDestroy () {
-    if (this.$q.platform.is.electron) {
-      this.$q.electron.ipcRenderer.removeListener('response-check-admin', this.get_auth_user)
-    }
+    this.$q.electron.ipcRenderer.removeListener('response-check-admin', this.get_auth_user)
   },
   methods: {
     get_auth_user (event, res) {
@@ -56,13 +50,29 @@ export default {
       }
 
       if (res.length === 1) {
-        options.color = 'green-4'
-        options.icon = 'cloud_done'
-        options.message = 'Founded!'
         const encrypted = res[0].APPPASSWORD
-        localStorage.setItem('secure-key', encrypted)
+        var isSuccesful = false
+        if (typeof encrypted === 'string') {
+          isSuccesful = this.validate_user(encrypted)
+        }
+        if (isSuccesful) {
+          options.color = 'green-4'
+          options.icon = 'cloud_done'
+          options.message = 'Welcome!'
+        } else {
+          options.message = 'The user has no password'
+        }
       }
       this.$q.notify(options)
+    },
+
+    validate_user (encrypted) {
+      // limpiamos la cadena
+      encrypted = encrypted.replace('sha1:', '')
+
+      /** Solo será válido para SHA1 */
+      this.$store.commit('security/setIsAuthenticated', encrypted)
+      return this.isAuthenticated
     },
 
     check_credentials () {
@@ -71,7 +81,13 @@ export default {
 
     onReset () {
       this.password = null
+      this.$store.commit('security/logout')
     }
+  },
+
+  computed: {
+    isAuthenticated () { return this.$store.getters['security/getIsAuthenticated'] },
+    shaCode () { return this.$store.getters['security/getShaCode'] }
   }
 }
 </script>
