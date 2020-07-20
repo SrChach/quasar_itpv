@@ -1,64 +1,73 @@
 <template>
   <q-page class="flex flex-center justify-center">
     <div class="q-pa-md">
-      <q-markup-table class="table-responsive">
-        <thead>
-          <tr>
-            <th v-for="(header, index) in showing" :key="index" class="text-left">{{ header.name }}</th>
-            <th class="text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(row, rowId) in rendering" :key="rowId">
-            <td v-for="(cell, cellId) in row" :key="cellId" class="text-right">
-              <span v-if="typeof cell.edit === 'undefined'">
-                {{ cell.original }}
-              </span>
+      <q-scroll-area
+        horizontal
+        style="height: 80vh; width: 90vw;"
+        class="bg-grey-1 rounded-borders"
+      >
+        <div class="row no-wrap">
+          <q-markup-table class="table-responsive">
+            <thead>
+              <tr>
+                <th v-for="(header, index) in showing" :key="index" class="text-left">{{ header.name }}</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, rowId) in rendering" :key="rowId">
+                <td v-for="(cell, cellId) in row" :key="cellId" class="text-right">
+                  <span v-if="typeof cell.edit === 'undefined'">
+                    {{ cell.original }}
+                  </span>
 
-              <div v-else>
-                <div v-if="cell.edit === null">
-                  {{ cell.original }}
-                  <q-btn
-                    round
-                    color="secondary"
-                    icon="edit"
-                    size="xs"
-                    @click="cell.edit = cell.original"
-                  />
-                </div>
+                  <div v-else>
+                    <div v-if="cell.edit === null">
+                      {{ cell.original }}
+                      <q-btn
+                        round
+                        color="secondary"
+                        icon="edit"
+                        size="xs"
+                        @click="cell.edit = cell.original"
+                      />
+                    </div>
 
-                <q-input
-                  v-else
-                  v-model="cell.edit"
-                  :label="cell.name"
-                  rounded
-                  clearable
-                  dense
-                  outlined
-                />
-              </div>
-            </td>
-            <td>
-              <div v-if="row.some(cell => typeof cell.edit !== 'undefined' && cell.edit !== null)">
-                <q-btn
-                  round
-                  color="amber"
-                  icon="undo"
-                  size="sm"
-                  @click="restore(row)"
-                />
-                <q-btn
-                  round
-                  color="red"
-                  icon="save"
-                  size="sm"
-                  @click="save(row)"
-                />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </q-markup-table>
+                    <q-input
+                      v-else
+                      v-model="cell.edit"
+                      :label="cell.name"
+                      style="min-width: 100px"
+                      rounded
+                      clearable
+                      dense
+                      outlined
+                    />
+                  </div>
+                </td>
+                <td>
+                  <div v-if="row.some(cell => typeof cell.edit !== 'undefined' && cell.edit !== null)">
+                    <q-btn
+                      round
+                      color="amber"
+                      icon="undo"
+                      size="sm"
+                      @click="restore(row)"
+                    />
+                    <q-btn
+                      round
+                      color="red"
+                      icon="save"
+                      size="sm"
+                      @click="save(row)"
+                    />
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+        </div>
+      </q-scroll-area>
     </div>
   </q-page>
 </template>
@@ -93,6 +102,9 @@ export default {
       showing: [ // Add types
         { name: 'ID', editable: false },
         { name: 'REFERENCE', editable: true },
+        { name: 'PRICEBUY', editable: true },
+        { name: 'PRICESELL', editable: true },
+        { name: 'CATEGORY', editable: true },
         { name: 'NAME', editable: true }
       ],
 
