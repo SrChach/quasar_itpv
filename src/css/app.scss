@@ -1,1 +1,54 @@
 // app global css in SCSS form
+
+@media screen and (max-width: 767px) {
+  .table-responsive {
+    table {
+      border: 0;
+
+      thead {
+        border: none;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+      }
+
+      tr {
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: .35em;
+        border-bottom: 3px solid #ddd;
+        display: block;
+        margin-bottom: .625em;
+      }
+
+      td {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        text-align: right;
+        white-space: initial;
+        height: auto;
+        padding: 8px 8px;
+        min-height: 32px;
+
+        &::before {
+          content: attr(data-label);
+          float: left;
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+
+        &:first-child {
+          width: 100%;
+        }
+
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+    }
+  }
+}

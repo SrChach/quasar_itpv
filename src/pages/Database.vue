@@ -1,6 +1,6 @@
 <template>
   <q-page class="flex flex-center justify-center">
-    <div class="q-pa-md" style="max-width: 400px">
+    <div class="q-pa-md" style="max-width: 80vw">
       <h4>Datos de BD(Requiere dump de ITPV y configuracion de src-electron.database.js):</h4><br>
       <pre>{{ retrieved_products }}</pre>
     </div>

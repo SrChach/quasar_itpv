@@ -16,9 +16,8 @@ const routes = [
   {
     path: '/unauthenticated',
     component: () => import('layouts/Unauthenticated.vue'),
-    name: 'unauthenticated',
     children: [
-      { path: '', component: () => import('pages/Login.vue') },
+      { path: '', name: 'unauthenticated', component: () => import('pages/Login.vue') },
       { path: 'scripts', component: () => import('pages/Scripts.vue') }
     ]
   },
