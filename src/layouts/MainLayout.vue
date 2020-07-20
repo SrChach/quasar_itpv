@@ -12,10 +12,16 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          ITPV App
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          flat
+          icon-right="logout"
+          label="Salir"
+          aria-label="Logout"
+          @click="closeSession"
+        />
       </q-toolbar>
     </q-header>
 
@@ -51,9 +57,14 @@ import EssentialLink from 'components/EssentialLink.vue'
 
 export default {
   name: 'MainLayout',
-
   components: {
     EssentialLink
+  },
+  methods: {
+    closeSession () {
+      this.$store.commit('security/logout')
+      this.$router.push('/unauthenticated')
+    }
   },
 
   data () {
@@ -83,12 +94,6 @@ export default {
           caption: 'Load XML files',
           icon: 'code',
           link: '/tickets'
-        },
-        {
-          title: 'Logout',
-          caption: 'Exit from system',
-          icon: 'cancel',
-          link: '/unauthenticated'
         }
       ]
     }

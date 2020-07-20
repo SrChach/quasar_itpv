@@ -16,8 +16,13 @@ const checkAdminUser = async (pass = '') => {
   if (conn === null)
     conn = await getConnection()
     const encryped = SHA1(pass).toString(Hex).toUpperCase()
-    const res = await conn.query(`SELECT * FROM people WHERE ID = 0 AND APPPASSWORD='sha1:${encryped}'`)
-    return res
+    const res = await conn.query(`SELECT APPPASSWORD FROM people WHERE ID = 0 AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )`)
+
+    if (res.length == 1) {
+      let pass = res[0].APPPASSWORD
+      return (pass === null) ? SHA1('temporal').toString(Hex).toUpperCase() : pass.replace('sha1:', '')
+    }
+    return null
 }
 
 /** Old app */

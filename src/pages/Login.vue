@@ -12,9 +12,8 @@
           filled
           type="password"
           v-model="password"
-          label="Contraseña *"
+          label="Contraseña"
           lazy-rules
-          :rules="[ val => val && val.length > 0 || 'Escribe una contraseña' ]"
         />
 
         <div>
@@ -30,7 +29,7 @@
 export default {
   data () {
     return {
-      password: null
+      password: ''
     }
   },
   created () {
@@ -41,34 +40,28 @@ export default {
     this.$q.electron.ipcRenderer.removeListener('response-check-admin', this.get_auth_user)
   },
   methods: {
-    get_auth_user (event, res) {
+    get_auth_user (event, encrypted) {
       const options = {
         color: 'red-4',
         textColor: 'white',
         icon: 'report_problem',
-        message: 'Password incorrecto o no seteado. Chequelo en la aplicación de ITPV'
+        message: 'Password incorrecto. Chequelo en la aplicación de ITPV'
       }
 
-      if (res.length === 1) {
-        const encrypted = res[0].APPPASSWORD
-        var isSuccesful = false
-        if (typeof encrypted === 'string') {
-          isSuccesful = this.validate_user(encrypted)
-        }
-        if (isSuccesful) {
-          options.color = 'green-4'
-          options.icon = 'cloud_done'
-          options.message = 'Bienvenido!'
-          this.$router.push('/')
-        }
+      var isSuccesful = false
+      if (typeof encrypted === 'string') {
+        isSuccesful = this.validate_user(encrypted)
+      }
+      if (isSuccesful) {
+        options.color = 'green-4'
+        options.icon = 'cloud_done'
+        options.message = 'Bienvenido!'
+        this.$router.push('/')
       }
       this.$q.notify(options)
     },
 
     validate_user (encrypted) {
-      // limpiamos la cadena
-      encrypted = encrypted.replace('sha1:', '')
-
       /** Solo será válido para SHA1 */
       this.$store.commit('security/setIsAuthenticated', encrypted)
       return this.isAuthenticated
@@ -79,7 +72,7 @@ export default {
     },
 
     onReset () {
-      this.password = null
+      this.password = ''
     }
   },
 
