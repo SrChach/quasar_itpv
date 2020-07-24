@@ -1,9 +1,17 @@
 <template>
   <q-page padding>
     <h4>Contenido de los tickets</h4>
-    <pre>
-      {{ templates }}
-    </pre>
+    <label for="tam">Selecciona el tamañano del papel de tu impresora: </label>
+    <select id="tam">
+      <option  v-for='opcion of opciones' value= {{opcion.id}} :key="opcion.id" > {{opcion.size}}</option>
+    </select>
+    <p>Escribe el texto para personalizar tu ticket</p>
+    <ul>
+      <li v-for="linea of lineas" :key="linea.id">
+        <input type="text" v-model="linea.texto">
+      </li>
+    </ul>
+    <button @click="agregarLinea">Agregar Linea</button> <button @click="quitarLinea">Quitar Linea</button>
   </q-page>
 </template>
 
@@ -12,6 +20,30 @@ export default {
   name: 'TicketContent',
   data: function () {
     return {
+      lineas: [
+        {
+          id: 1,
+          texto: 'Linea 1'
+        },
+        {
+          id: 2,
+          texto: 'Linea 2'
+        }
+      ],
+      opciones: [
+        {
+          id: 1,
+          size: '58mm',
+          xmlTicket: '',
+          xmlPreview: ''
+        },
+        {
+          id: 2,
+          size: '80mm',
+          xmlTicket: '',
+          xmlPreview: ''
+        }
+      ],
       templates: [
         {
           name: 'Ticket ejemplo',
@@ -29,7 +61,23 @@ export default {
           name: 'ejemplo2',
           max_chars: '...'
         }
-      ]
+      ],
+      contador: 3
+    }
+  },
+  methods: {
+    agregarLinea () {
+      this.lineas.push({
+        id: this.contador,
+        texto: 'Linea ' + this.contador
+      })
+      this.contador++
+    },
+    quitarLinea () {
+      if (this.contador > 1) {
+        this.lineas.pop()
+        this.contador--
+      }
     }
   }
 }

@@ -2,10 +2,10 @@ const mysql = require('promise-mysql')
 
 const connection = mysql.createConnection({
   host: 'localhost',
-  database: 'electrondb',
+  database: 'itpv',
   user: 'root',
-  password: 'Somepassword',
-  port: 3306
+  password: 'cobusiness1348',
+  port: 3336
 })
 
 function getConnection () {
