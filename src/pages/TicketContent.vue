@@ -2,10 +2,10 @@
   <q-page padding>
     <h4>Contenido de los tickets</h4>
     <label for="tam">Selecciona el tamañano del papel de tu impresora: </label>
-    <select id="tam">
-      <option  v-for='opcion of opciones' value= {{opcion.id}} :key="opcion.id" > {{opcion.size}}</option>
+    <select id="tam" v-model="seleccionado">
+      <option v-for='opcion of opciones' :value="opcion.id" :key="opcion.id" > {{opcion.size}}</option>
     </select>
-    <p>Escribe el texto para personalizar tu ticket</p>
+    <p>Escribe el texto para personalizar tu ticket {{seleccionado}}</p>
     <ul>
       <li v-for="linea of lineas" :key="linea.id">
         <input type="text" v-model="linea.texto">
@@ -20,6 +20,7 @@ export default {
   name: 'TicketContent',
   data: function () {
     return {
+      seleccionado: null,
       lineas: [
         {
           id: 1,
