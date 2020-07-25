@@ -72,3 +72,8 @@ ipcMain.on('call-check-admin', async (event, password) => {
   const result = await checkAdminUser(password)
   event.reply('response-check-admin', result)
 })
+
+// Escucha un evento de la vista, recibe datos
+ipcMain.on('llamar-base-datos', (event, datos) => {
+  event.reply('responder-base-datos', datos)
+})

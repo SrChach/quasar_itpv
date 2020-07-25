@@ -12,6 +12,7 @@
       </li>
     </ul>
     <button @click="agregarLinea">Agregar Linea</button> <button @click="quitarLinea">Quitar Linea</button>
+    <button @click="llamarEvento()">Disparar evento!</button>
   </q-page>
 </template>
 
@@ -66,7 +67,19 @@ export default {
       contador: 3
     }
   },
+
+  created () {
+    this.$q.electron.ipcRenderer.on('responder-base-datos', this.imprime)
+  },
+
+  destroyed () {
+    this.$q.electron.ipcRenderer.removeListener('responder-base-datos', this.imprime)
+  },
+
   methods: {
+    imprime (e, res) {
+      console.log(res)
+    },
     agregarLinea () {
       this.lineas.push({
         id: this.contador,
@@ -79,6 +92,9 @@ export default {
         this.lineas.pop()
         this.contador--
       }
+    },
+    llamarEvento () {
+      this.$q.electron.ipcRenderer.send('llamar-base-datos', { msg: 'hola erick!' })
     }
   }
 }
