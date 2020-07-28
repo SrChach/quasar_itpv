@@ -8,7 +8,7 @@
       <q-markup-table class="table-responsive">
         <thead>
           <tr>
-            <th v-for="(header, index) in showing" :key="index" class="text-left">{{ header.name }}</th>
+            <th v-for="(header, index) in showingColumns" :key="index" class="text-left">{{ header.name }}</th>
             <th class="text-right">Actions</th>
           </tr>
         </thead>
@@ -45,19 +45,27 @@
             </td>
             <td>
               <div v-if="row.some(cell => typeof cell.edit !== 'undefined' && cell.edit !== null)">
-                <q-btn
-                  @click="restore(rowId)"
-                  round
-                  color="amber"
-                  icon="undo"
-                  size="sm"
-                />
-                <q-btn
-                  @click="save({ rowId, row })"
-                  round
-                  color="red"
-                  icon="save"
-                  size="sm"
+                <div>
+                  <q-btn
+                    @click="restore(rowId)"
+                    round
+                    color="amber"
+                    icon="undo"
+                    size="sm"
+                  />
+                  <q-btn
+                    @click="save({ rowId, row })"
+                    round
+                    color="red"
+                    icon="save"
+                    size="sm"
+                  />
+                  {{ blocked }}
+                </div>
+              </div>
+              <div v-else>
+                <q-spinner-hourglass v-if="blocked.includes(rowId)"
+                  color="purple"
                 />
               </div>
             </td>
@@ -70,46 +78,25 @@
 
 <script>
 export default {
+  props: {
+    datatable: {
+      type: Array,
+      default: () => []
+    },
+    showingColumns: {
+      type: Array,
+      default: () => []
+    }
+  },
   data () {
     return {
-      datatable: [
-        {
-          ID: '11600',
-          REFERENCE: 'DESCUENTO',
-          CODE: '11600',
-          CODETYPE: null,
-          NAME: 'DESCUENTO NO BORRAR',
-          PRICEBUY: 0,
-          PRICESELL: 0,
-          CATEGORY: '2100'
-        },
-        {
-          ID: '11601',
-          REFERENCE: 'MANO DE OBRA',
-          CODE: '11601',
-          CODETYPE: null,
-          NAME: 'MANO DE OBRA NO BORRAR',
-          PRICEBUY: 0,
-          PRICESELL: 0,
-          CATEGORY: '2100'
-        }
-      ],
-
-      showing: [ // Add types
-        { name: 'ID', editable: false },
-        { name: 'REFERENCE', editable: true },
-        { name: 'PRICEBUY', editable: true },
-        { name: 'PRICESELL', editable: true },
-        { name: 'CATEGORY', editable: true },
-        { name: 'NAME', editable: true }
-      ],
-
-      rendering: []
+      rendering: [],
+      blocked: []
     }
   },
 
   created () {
-    this.rendering = this.cleanData(this.datatable, this.showing)
+    this.rendering = this.cleanData(this.datatable, this.showingColumns)
   },
 
   methods: {
@@ -135,7 +122,6 @@ export default {
     },
 
     save ({ rowId, row }) {
-      this.saveChanges(rowId)
       const res = {}
       row.map(field => {
         if (typeof field.edit !== 'undefined' && field.edit !== null) {
@@ -144,13 +130,9 @@ export default {
           res[field.name] = field.original
         }
       })
-      this.$emit('save-table', { id: rowId, res: res })
-      console.log({
-        id: rowId,
-        res: res,
-        row: row
-      })
+      this.blocked.push(rowId)
       this.saveChanges(rowId)
+      this.$emit('save-table', { id: rowId, res: res })
     },
 
     cleanData (data, columns) {
