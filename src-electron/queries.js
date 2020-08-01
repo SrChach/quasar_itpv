@@ -33,5 +33,11 @@ const insertProduct = async (product) => {
   const result = await conn.query('INSERT INTO product set ?', product)
   return result
 }
+const insertTicket = async (datos, opc) => {
+  if (conn === null)
+    conn = await getConnection()
+  const result = await conn.query('UPDATE resources SET resources.CONTENT='+datos+' WHERE resources.ID='+ opc)
+  return result
+}
 
-module.exports = { getProducts, insertProduct, checkAdminUser }
+module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket}
