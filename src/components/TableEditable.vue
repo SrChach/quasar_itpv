@@ -60,7 +60,6 @@
                     icon="save"
                     size="sm"
                   />
-                  {{ blocked }}
                 </div>
               </div>
               <div v-else>
@@ -96,10 +95,19 @@ export default {
   },
 
   created () {
-    this.rendering = this.cleanData(this.datatable, this.showingColumns)
+    this.$q.electron.ipcRenderer.send('call-get-products', 'some message')
+    this.$q.electron.ipcRenderer.on('response-test-connection', this.list_products)
+  },
+
+  beforeDestroy () {
+    this.$q.electron.ipcRenderer.removeListener('response-test-connection', this.list_products)
   },
 
   methods: {
+    list_products (event, res) {
+      this.rendering = this.cleanData(res, this.showingColumns)
+    },
+
     restore (rowId) {
       const row = this.rendering[rowId]
       row.forEach(el => {

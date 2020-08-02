@@ -12,28 +12,7 @@ import table from '../components/TableEditable'
 export default {
   data () {
     return {
-      data: [
-        {
-          ID: '11600',
-          REFERENCE: 'DESCUENTO',
-          CODE: '11600',
-          CODETYPE: null,
-          NAME: 'DESCUENTO NO BORRAR',
-          PRICEBUY: 0,
-          PRICESELL: 0,
-          CATEGORY: '2100'
-        },
-        {
-          ID: '11601',
-          REFERENCE: 'MANO DE OBRA',
-          CODE: '11601',
-          CODETYPE: null,
-          NAME: 'MANO DE OBRA NO BORRAR',
-          PRICEBUY: 0,
-          PRICESELL: 0,
-          CATEGORY: '2100'
-        }
-      ],
+      data: [],
       showingColumns: [ // Add types
         { name: 'ID', editable: false },
         { name: 'REFERENCE', editable: true },
