@@ -1,5 +1,5 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getProducts, insertProduct, checkAdminUser } from '../queries.js'
+import { getProducts, insertProduct, checkAdminUser, insertTicket } from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -71,4 +71,10 @@ ipcMain.on('call-insert-products', async (event, product) => {
 ipcMain.on('call-check-admin', async (event, password) => {
   const result = await checkAdminUser(password)
   event.reply('response-check-admin', result)
+})
+
+// Escucha un evento de la vista, recibe datos
+ipcMain.on('llamar-base-datos', async (event, datos, opc) => {
+  const result = await insertTicket(datos, opc)
+  event.reply('responder-base-datos', result)
 })
