@@ -33,10 +33,11 @@ const insertProduct = async (product) => {
   const result = await conn.query('INSERT INTO product set ?', product)
   return result
 }
-const insertTicket = async (datos, opc) => {
+
+const insertTicket = async (datos, resourceId) => {
   if (conn === null)
     conn = await getConnection()
-  const result = await conn.query('UPDATE resources SET resources.CONTENT='+datos+' WHERE resources.ID='+ opc)
+  const result = await conn.query(`UPDATE resources SET resources.CONTENT='${datos}' WHERE resources.ID='${resourceId}'`)
   return result
 }
 

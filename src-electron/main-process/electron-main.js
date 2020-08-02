@@ -74,7 +74,7 @@ ipcMain.on('call-check-admin', async (event, password) => {
 })
 
 // Escucha un evento de la vista, recibe datos
-ipcMain.on('llamar-base-datos', async (event, datos, opc) => {
-  const result = await insertTicket(datos, opc)
-  event.reply('responder-base-datos', result)
+ipcMain.on('llamar-insertar-ticket', async (event, datos, resourceId) => {
+  const result = await insertTicket(datos, resourceId)
+  event.reply('responder-insertar-ticket', result, resourceId)
 })
