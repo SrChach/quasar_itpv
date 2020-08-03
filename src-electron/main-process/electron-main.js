@@ -1,5 +1,5 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct } from '../queries.js'
+import { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel } from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -76,6 +76,26 @@ ipcMain.on('call-update-product', async (event, product, idObject) => {
     idObject: idObject
   }
   event.reply('response-update-product', result)
+})
+
+ipcMain.on('call-update-stock', async (event, idObject, units) => {
+  const stock = await updateStockCurrent(idObject.value, units)
+  const result = {
+    affected: stock.affectedRows,
+    tableId: idObject.tableId,
+    error: stock.error
+  }
+  event.reply('response-update-stock', result)
+})
+
+ipcMain.on('call-update-stocklevel', async (event, idObject, min, max) => {
+  const stock = await updateStockLevel(idObject.value, min, max)
+  const result = {
+    affected: stock.affectedRows,
+    tableId: idObject.tableId,
+    error: stock.error
+  }
+  event.reply('response-update-stocklevel', result)
 })
 
 ipcMain.on('call-check-admin', async (event, password) => {

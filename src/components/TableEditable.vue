@@ -27,7 +27,7 @@
                     color="secondary"
                     icon="edit"
                     size="xs"
-                    @click="cell.edit = cell.original"
+                    @click="cell.edit = (cell.original != null) ? cell.original : ''"
                   />
                 </div>
 
@@ -58,7 +58,7 @@
                     size="sm"
                   />
                   <q-btn
-                    @click="saveToDB({ rowId, row })"
+                    @click="saveToDB(rowId)"
                     round
                     color="red"
                     icon="save"
@@ -96,12 +96,16 @@ export default {
   created () {
     this.$q.electron.ipcRenderer.send('call-get-products', 'some filters will be here')
     this.$q.electron.ipcRenderer.on('response-get-products', this.list_products)
-    this.$q.electron.ipcRenderer.on('response-update-product', this.manageUpdated)
+    this.$q.electron.ipcRenderer.on('response-update-product', this.onUpdatedProduct)
+    this.$q.electron.ipcRenderer.on('response-update-stock', this.onUpdatedStockCurrent)
+    this.$q.electron.ipcRenderer.on('response-update-stocklevel', this.onUpdatedStockLevel)
   },
 
   beforeDestroy () {
     this.$q.electron.ipcRenderer.removeListener('response-get-products', this.list_products)
-    this.$q.electron.ipcRenderer.removeListener('response-update-product', this.manageUpdated)
+    this.$q.electron.ipcRenderer.removeListener('response-update-product', this.onUpdatedProduct)
+    this.$q.electron.ipcRenderer.removeListener('response-update-stock', this.onUpdatedStockCurrent)
+    this.$q.electron.ipcRenderer.removeListener('response-update-stocklevel', this.onUpdatedStockLevel)
   },
 
   methods: {
@@ -115,6 +119,7 @@ export default {
           }
           if (field.editable) inside.edit = null
           if (field._id) inside._id = true
+          if (field.table) inside.table = field.table
           selected.push(inside)
         })
         return selected
@@ -127,20 +132,20 @@ export default {
       this.rendering = this.cleanData(res, this.showingColumns)
     },
 
-    restoreRow (rowId) {
+    restoreRow (rowId, table = '') {
       const row = this.rendering[rowId]
       row.forEach(el => {
         if (typeof el.edit !== 'undefined') {
-          el.edit = null
+          if (table === '' || (table !== '' && el.table === table)) el.edit = null
         }
       })
     },
 
-    saveChangesLocally (rowId) {
+    saveChangesLocally (rowId, table = '') {
       const row = this.rendering[rowId]
       row.forEach(el => {
-        if (typeof el.edit !== 'undefined') {
-          if (el.edit !== null) {
+        if (typeof el.edit !== 'undefined' && el.edit !== null) {
+          if (table === '' || (table !== '' && el.table === table)) {
             el.original = el.edit
             el.edit = null
           }
@@ -148,9 +153,10 @@ export default {
       })
     },
 
-    createPayload (rowId) {
-      const row = this.rendering[rowId]
+    createPayload (rowId, table = '') {
+      let row = JSON.parse(JSON.stringify(this.rendering[rowId]))
       const res = {}
+      if (table !== '') row = row.filter(field => field.table === table)
       row.map(field => {
         if (typeof field.edit !== 'undefined') {
           if (field.edit !== null) {
@@ -163,21 +169,31 @@ export default {
       return res
     },
 
-    findDataId (rowId) {
-      const idField = this.rendering[rowId].find(field => field._id === true)
+    findDataId (rowId, table = '') {
+      let row = JSON.parse(JSON.stringify(this.rendering[rowId]))
+      if (table !== '') row = row.filter(field => field.table === table)
+      const idField = row.find(field => field._id === true)
       return (idField) ? { name: idField.name, value: idField.original, tableId: rowId } : undefined
     },
 
-    saveToDB ({ rowId, row }) {
-      const res = this.createPayload(rowId)
-      const idObject = this.findDataId(rowId)
+    saveToDB (rowId) {
+      const res = this.createPayload(rowId, 'products')
+      const idObject = this.findDataId(rowId, 'products')
+      const { UNITS } = this.createPayload(rowId, 'stockcurrent')
+      const { STOCKSECURITY, STOCKMAXIMUM } = this.createPayload(rowId, 'stocklevel')
+
+      if (UNITS !== null) this.$q.electron.ipcRenderer.send('call-update-stock', idObject, UNITS)
+      if (STOCKSECURITY !== null || STOCKMAXIMUM !== null) {
+        this.$q.electron.ipcRenderer.send('call-update-stocklevel', idObject, STOCKSECURITY, STOCKMAXIMUM)
+      }
+
       this.$q.electron.ipcRenderer.send('call-update-product', res, idObject)
       this.blocked.push(rowId)
     },
 
-    manageUpdated (event, res) {
+    onUpdatedProduct (event, res) {
       if (res.affected !== undefined && res.affected > 0) {
-        this.saveChangesLocally(res.idObject.tableId)
+        this.saveChangesLocally(res.idObject.tableId, 'products')
         this.$q.notify({
           color: 'green-4',
           textColor: 'white',
@@ -185,7 +201,7 @@ export default {
           message: 'Producto actualizado'
         })
       } else {
-        this.restoreRow(res.idObject.tableId)
+        this.restoreRow(res.idObject.tableId, 'products')
         this.$q.notify({
           color: 'red-4',
           textColor: 'white',
@@ -196,6 +212,33 @@ export default {
       }
       const index = this.blocked.indexOf(res.idObject.tableId)
       if (index > -1) this.blocked.splice(index, 1)
+    },
+
+    onUpdatedStockCurrent (event, res) {
+      if (res.error) {
+        this.errorMessage('La cantidad en Stock no se actualizó correctamente. Recargue la página y vuelva a intentarlo')
+        this.restoreRow(res.tableId, 'stockcurrent')
+      } else {
+        this.saveChangesLocally(res.tableId, 'stockcurrent')
+      }
+    },
+
+    onUpdatedStockLevel (event, res) {
+      if (res.error) {
+        this.errorMessage('Los límites de stock no se actualizaron. Cheque que ambos sean números o recargue la página')
+        this.restoreRow(res.tableId, 'stocklevel')
+      } else {
+        this.saveChangesLocally(res.tableId, 'stocklevel')
+      }
+    },
+
+    errorMessage (msg) {
+      this.$q.notify({
+        color: 'red-4',
+        textColor: 'white',
+        icon: 'warning',
+        message: msg
+      })
     }
   }
 }
