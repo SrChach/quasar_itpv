@@ -1,7 +1,7 @@
 <template>
   <q-page class="flex flex-center justify-center">
     <div class="q-pa-md">
-      <custom-table @save-table="imprime" :datatable="data" :showingColumns="showingColumns"/>
+      <custom-table :datatable="data" :showingColumns="showingColumns"/>
     </div>
   </q-page>
 </template>
@@ -14,22 +14,17 @@ export default {
     return {
       data: [],
       showingColumns: [ // Add types
-        { name: 'ID', editable: false },
+        { name: 'ID', editable: false, _id: true },
         { name: 'REFERENCE', editable: true },
         { name: 'PRICEBUY', editable: true },
         { name: 'PRICESELL', editable: true },
-        { name: 'CATEGORY', editable: true },
+        { name: 'CATEGORY', editable: false },
         { name: 'NAME', editable: true }
       ]
     }
   },
   components: {
     'custom-table': table
-  },
-  methods: {
-    imprime (e) {
-      console.log(e)
-    }
   }
 }
 </script>

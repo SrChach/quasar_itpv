@@ -33,6 +33,7 @@
 
                 <q-input
                   v-else
+                  :disable="blocked.includes(rowId)"
                   v-model="cell.edit"
                   :label="cell.name"
                   style="min-width: 100px"
@@ -45,27 +46,25 @@
             </td>
             <td>
               <div v-if="row.some(cell => typeof cell.edit !== 'undefined' && cell.edit !== null)">
-                <div>
+                <q-spinner-hourglass v-if="blocked.includes(rowId)"
+                  color="purple"
+                />
+                <div v-else>
                   <q-btn
-                    @click="restore(rowId)"
+                    @click="restoreRow(rowId)"
                     round
                     color="amber"
                     icon="undo"
                     size="sm"
                   />
                   <q-btn
-                    @click="save({ rowId, row })"
+                    @click="saveToDB({ rowId, row })"
                     round
                     color="red"
                     icon="save"
                     size="sm"
                   />
                 </div>
-              </div>
-              <div v-else>
-                <q-spinner-hourglass v-if="blocked.includes(rowId)"
-                  color="purple"
-                />
               </div>
             </td>
           </tr>
@@ -95,20 +94,40 @@ export default {
   },
 
   created () {
-    this.$q.electron.ipcRenderer.send('call-get-products', 'some message')
-    this.$q.electron.ipcRenderer.on('response-test-connection', this.list_products)
+    this.$q.electron.ipcRenderer.send('call-get-products', 'some filters will be here')
+    this.$q.electron.ipcRenderer.on('response-get-products', this.list_products)
+    this.$q.electron.ipcRenderer.on('response-update-product', this.manageUpdated)
   },
 
   beforeDestroy () {
-    this.$q.electron.ipcRenderer.removeListener('response-test-connection', this.list_products)
+    this.$q.electron.ipcRenderer.removeListener('response-get-products', this.list_products)
+    this.$q.electron.ipcRenderer.removeListener('response-update-product', this.manageUpdated)
   },
 
   methods: {
+    cleanData (data, columns) {
+      const cleanedData = data.map(el => {
+        const selected = []
+        columns.forEach(field => {
+          const inside = {
+            name: field.name,
+            original: el[field.name]
+          }
+          if (field.editable) inside.edit = null
+          if (field._id) inside._id = true
+          selected.push(inside)
+        })
+        return selected
+      })
+
+      return cleanedData
+    },
+
     list_products (event, res) {
       this.rendering = this.cleanData(res, this.showingColumns)
     },
 
-    restore (rowId) {
+    restoreRow (rowId) {
       const row = this.rendering[rowId]
       row.forEach(el => {
         if (typeof el.edit !== 'undefined') {
@@ -117,7 +136,7 @@ export default {
       })
     },
 
-    saveChanges (rowId) {
+    saveChangesLocally (rowId) {
       const row = this.rendering[rowId]
       row.forEach(el => {
         if (typeof el.edit !== 'undefined') {
@@ -129,37 +148,54 @@ export default {
       })
     },
 
-    save ({ rowId, row }) {
+    createPayload (rowId) {
+      const row = this.rendering[rowId]
       const res = {}
       row.map(field => {
-        if (typeof field.edit !== 'undefined' && field.edit !== null) {
-          res[field.name] = field.edit
-        } else {
-          res[field.name] = field.original
+        if (typeof field.edit !== 'undefined') {
+          if (field.edit !== null) {
+            res[field.name] = field.edit
+          } else {
+            res[field.name] = field.original
+          }
         }
       })
-      this.blocked.push(rowId)
-      this.saveChanges(rowId)
-      this.$emit('save-table', { id: rowId, res: res })
+      return res
     },
 
-    cleanData (data, columns) {
-      const cleanedData = data.map(el => {
-        const selected = []
-        columns.forEach(field => {
-          const inside = {
-            name: field.name,
-            original: el[field.name]
-          }
-          if (field.editable) {
-            inside.edit = null
-          }
-          selected.push(inside)
-        })
-        return selected
-      })
+    findDataId (rowId) {
+      const idField = this.rendering[rowId].find(field => field._id === true)
+      return (idField) ? { name: idField.name, value: idField.original, tableId: rowId } : undefined
+    },
 
-      return cleanedData
+    saveToDB ({ rowId, row }) {
+      const res = this.createPayload(rowId)
+      const idObject = this.findDataId(rowId)
+      this.$q.electron.ipcRenderer.send('call-update-product', res, idObject)
+      this.blocked.push(rowId)
+    },
+
+    manageUpdated (event, res) {
+      if (res.affected !== undefined && res.affected > 0) {
+        this.saveChangesLocally(res.idObject.tableId)
+        this.$q.notify({
+          color: 'green-4',
+          textColor: 'white',
+          icon: 'check_circle',
+          message: 'Producto actualizado'
+        })
+      } else {
+        this.restoreRow(res.idObject.tableId)
+        this.$q.notify({
+          color: 'red-4',
+          textColor: 'white',
+          icon: 'warning',
+          message: `No se ha podido actualizar.
+          Codigo de error: ${res.error}`
+        })
+      }
+      const index = this.blocked.indexOf(res.idObject.tableId)
+      if (index > -1) this.blocked.splice(index, 1)
     }
   }
 }

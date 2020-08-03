@@ -1,6 +1,10 @@
+/** Database */
 const { getConnection } = require('./database.js')
+
+/** Utilities */
 const SHA1 = require('crypto-js/sha1')
 const Hex = require('crypto-js/enc-hex')
+const { getUpdateConditions } = require('./utils.js')
 
 let conn = null
 
@@ -29,9 +33,20 @@ const checkAdminUser = async (pass = '') => {
 const insertProduct = async (product) => {
   if (conn === null)
     conn = await getConnection()
-  product.price = parseFloat(product.price)
-  const result = await conn.query('INSERT INTO product set ?', product)
+  const result = await conn.query('INSERT INTO products set ?', product)
   return result
+}
+
+const updateProduct = async (product, idObject) => {
+  if (conn === null)
+    conn = await getConnection()
+  try {
+    const result = await conn.query(`UPDATE products SET ? WHERE ?`, [product, idObject])
+    return result
+  } catch (error) {
+    console.log(error)
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
 }
 
 const insertTicket = async (datos, resourceId) => {
@@ -41,4 +56,4 @@ const insertTicket = async (datos, resourceId) => {
   return result
 }
 
-module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket}
+module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct }
