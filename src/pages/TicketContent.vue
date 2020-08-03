@@ -21,7 +21,8 @@
           :label="`Linea ${index + 1}`"
           :ref="`ticket-input-${ index }`"
           v-model="lines[index]"
-          clearable filled style="display: inline-block" size="35px"
+          clearable filled style="display: inline-block" size="45px"
+          :maxlength="opciones[seleccionado].tam"
           :rules="[
             val => !!val || 'Por favor no añadas lineas en blanco',
             val => val.length <= opciones[seleccionado].tam || `Usa máximo ${ opciones[seleccionado].tam } caracteres`,
