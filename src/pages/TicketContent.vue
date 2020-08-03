@@ -13,8 +13,9 @@
     <p style="color: red">
       El máximo de caracteres por linea para tu impresora es: <b>{{ opciones[seleccionado].tam }} caracteres</b>
     </p>
-
     <form @submit.prevent="insertarTicket" class="q-pa-md q-gutter-sm">
+      <q-btn color="primary" label="Añadir linea" icon-right="add_circle" @click="lines.push('')"/>
+      <q-btn type="submit" color="green" icon-right="save" label="Guardar Ticket"/>
       <div v-for="(line, index) of lines" :key="index">
         <q-input
           :label="`Linea ${index + 1}`"
@@ -29,8 +30,6 @@
         />
         <q-btn round color="red" size="sm" icon="remove" @click="lines.splice(index, 1)"/>
       </div>
-      <q-btn color="primary" label="Añadir linea" icon-right="add_circle" @click="lines.push('')"/>
-      <q-btn type="submit" color="green" icon-right="save" label="Guardar Ticket"/>
     </form>
   </q-page>
 </template>

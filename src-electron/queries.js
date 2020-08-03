@@ -37,7 +37,7 @@ const insertProduct = async (product) => {
 const insertTicket = async (datos, resourceId) => {
   if (conn === null)
     conn = await getConnection()
-  const result = await conn.query(`UPDATE resources SET resources.CONTENT='${datos}' WHERE resources.ID='${resourceId}'`)
+  const result = await conn.query('UPDATE resources SET resources.CONTENT=' + datos + ' WHERE resources.ID="' + resourceId + '"')
   return result
 }
 
