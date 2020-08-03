@@ -84,10 +84,10 @@ export default {
           link: '/carga'
         },
         {
-          title: 'Database (Alpha)',
-          caption: 'Test connection to database on frontend',
-          icon: 'donut_small',
-          link: '/database'
+          title: 'Actualizar Productos',
+          caption: 'Ver y actualizar datos de los productos',
+          icon: 'fact_check',
+          link: '/products'
         },
         {
           title: 'Cargar tickets',
