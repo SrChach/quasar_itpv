@@ -13,7 +13,7 @@ const getProducts = async (search = '.*') => {
     conn = await getConnection()
   try {
     const result = await conn.query(`
-      SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM
+      SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
         FROM
             products p
           LEFT JOIN
@@ -24,9 +24,11 @@ const getProducts = async (search = '.*') => {
             (
               SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
             ) sl ON p.ID = sl.PRODUCT
+          LEFT JOIN categories c ON c.ID = p.CATEGORY
         WHERE
-          p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.MARCA REGEXP ? OR p.MODELO REGEXP ?
-    `, [search, search, search, search])
+          p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.REFERENCE REGEXP ?
+        ORDER BY CATEGORIA, NAME
+    `, [search, search, search])
     return result
   } catch (error) {
     return []

@@ -15,20 +15,20 @@ export default {
       data: [],
       showingColumns: [
         { name: 'ID', editable: false, _id: true, table: 'products' },
+        { name: 'REFERENCE', editable: true, table: 'products' },
+        { name: 'CATEGORIA', editable: false },
         { name: 'CODE', editable: true, table: 'products' },
         { name: 'NAME', editable: true, table: 'products' },
+        { name: 'UNITS', editable: true, table: 'stockcurrent', type: 'number' },
         { name: 'PRICEBUY', editable: true, table: 'products', type: 'number' },
         { name: 'PRICESELL', editable: true, table: 'products', type: 'number' },
-        { name: 'CATEGORY', editable: false, table: 'products' },
         { name: 'TAXCAT', editable: false, table: 'products' },
-        { name: 'REFERENCE', editable: true, table: 'products' },
         { name: 'MARCA', editable: true, table: 'products' },
         { name: 'MODELO', editable: true, table: 'products' },
         { name: 'MONEDERO', editable: true, table: 'products', type: 'number' },
         { name: 'DISCOUNT', editable: true, table: 'products', type: 'number' },
         { name: 'SERIE', editable: true, table: 'products' },
         { name: 'MEDIDA', editable: true, table: 'products' },
-        { name: 'UNITS', editable: true, table: 'stockcurrent', type: 'number' },
         { name: 'STOCKSECURITY', editable: true, table: 'stocklevel', type: 'number' },
         { name: 'STOCKMAXIMUM', editable: true, table: 'stocklevel', type: 'number' }
       ]

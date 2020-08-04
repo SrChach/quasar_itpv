@@ -4,7 +4,7 @@
       <div class="col-10">
         <q-input
           v-model="search"
-          label="Busca por nombre, código, marca o modelo"
+          label="Busca por nombre, código o referencia"
           type="text" outlined rounded dense clearable color="secondary" class="q-mb-sm"
         >
           <template v-slot:after>
@@ -84,6 +84,9 @@
           </tr>
         </tbody>
       </q-markup-table>
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products')" color="secondary" />
+      </q-page-sticky>
     </q-scroll-area>
   </div>
 </template>
