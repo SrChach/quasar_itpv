@@ -8,23 +8,29 @@ const Hex = require('crypto-js/enc-hex')
 let conn = null
 
 
-const getProducts = async () => {
+const getProducts = async (search = '.*') => {
   if (conn === null)
     conn = await getConnection()
-  const result = await conn.query(`
-    SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM
-      FROM
-          products p
-        LEFT JOIN
-          (
-            SELECT PRODUCT, UNITS FROM stockcurrent WHERE LOCATION = 0
-          ) sc ON p.ID = sc.PRODUCT
-        LEFT JOIN
-          (
-            SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
-          ) sl ON p.ID = sl.PRODUCT
-  `)
-  return result
+  try {
+    const result = await conn.query(`
+      SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM
+        FROM
+            products p
+          LEFT JOIN
+            (
+              SELECT PRODUCT, UNITS FROM stockcurrent WHERE LOCATION = 0
+            ) sc ON p.ID = sc.PRODUCT
+          LEFT JOIN
+            (
+              SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
+            ) sl ON p.ID = sl.PRODUCT
+        WHERE
+          p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.MARCA REGEXP ? OR p.MODELO REGEXP ?
+    `, [search, search, search, search])
+    return result
+  } catch (error) {
+    return []
+  }
 }
 
 const checkAdminUser = async (pass = '') => {

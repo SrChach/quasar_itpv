@@ -1,11 +1,24 @@
 <template>
-  <q-scroll-area
-    horizontal
-    style="height: 80vh; width: 90vw;"
-    class="bg-grey-1 rounded-borders"
-  >
-    <div class="row no-wrap">
-      <q-markup-table class="table-responsive">
+  <div class="q-pa-md">
+    <div class="row justify-center">
+      <div class="col-10">
+        <q-input
+          v-model="search"
+          label="Busca por nombre, código, marca o modelo"
+          type="text" outlined rounded dense clearable color="secondary" class="q-mb-sm"
+        >
+          <template v-slot:after>
+            <q-btn round dense flat icon="search" @click="$q.electron.ipcRenderer.send('call-get-products', search)"/>
+          </template>
+        </q-input>
+      </div>
+    </div>
+    <q-scroll-area
+      horizontal
+      style="height: 80vh; width: 90vw;"
+      class="row justify-center bg-grey-1 rounded-borders"
+    >
+      <q-markup-table class="table-responsive col-11" style="margin: 0 5px;">
         <thead>
           <tr>
             <th v-for="(header, index) in showingColumns" :key="index" class="text-left">{{ header.name }}</th>
@@ -33,10 +46,11 @@
 
                 <q-input
                   v-else
-                  :disable="blocked.includes(rowId)"
                   v-model="cell.edit"
                   :label="cell.name"
-                  style="min-width: 100px"
+                  :disable="blocked.includes(rowId)"
+                  :type="cell.type || 'text'"
+                  style="min-width: 120px"
                   rounded
                   clearable
                   dense
@@ -70,8 +84,8 @@
           </tr>
         </tbody>
       </q-markup-table>
-    </div>
-  </q-scroll-area>
+    </q-scroll-area>
+  </div>
 </template>
 
 <script>
@@ -89,12 +103,13 @@ export default {
   data () {
     return {
       rendering: [],
-      blocked: []
+      blocked: [],
+      search: ''
     }
   },
 
   created () {
-    this.$q.electron.ipcRenderer.send('call-get-products', 'some filters will be here')
+    this.$q.electron.ipcRenderer.send('call-get-products')
     this.$q.electron.ipcRenderer.on('response-get-products', this.list_products)
     this.$q.electron.ipcRenderer.on('response-update-product', this.onUpdatedProduct)
     this.$q.electron.ipcRenderer.on('response-update-stock', this.onUpdatedStockCurrent)
@@ -120,6 +135,7 @@ export default {
           if (field.editable) inside.edit = null
           if (field._id) inside._id = true
           if (field.table) inside.table = field.table
+          if (field.type) inside.type = field.type
           selected.push(inside)
         })
         return selected
@@ -216,7 +232,7 @@ export default {
 
     onUpdatedStockCurrent (event, res) {
       if (res.error) {
-        this.errorMessage('La cantidad en Stock no se actualizó correctamente. Recargue la página y vuelva a intentarlo')
+        this.errorMessage('Las Unidades en Stock no se actualizaron. La cantidad ingresada tiene que ser un número')
         this.restoreRow(res.tableId, 'stockcurrent')
       } else {
         this.saveChangesLocally(res.tableId, 'stockcurrent')
@@ -225,7 +241,7 @@ export default {
 
     onUpdatedStockLevel (event, res) {
       if (res.error) {
-        this.errorMessage('Los límites de stock no se actualizaron. Cheque que ambos sean números o recargue la página')
+        this.errorMessage('Los límites de stock no se actualizaron. Cheque que ambos sean números')
         this.restoreRow(res.tableId, 'stocklevel')
       } else {
         this.saveChangesLocally(res.tableId, 'stocklevel')

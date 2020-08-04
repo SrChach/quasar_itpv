@@ -58,8 +58,9 @@ app.on('activate', () => {
 })
 
 /** Code for managing SQL requests and responses */
-ipcMain.on('call-get-products', async (event, arg) => {
-  const result = await getProducts()
+ipcMain.on('call-get-products', async (event, search) => {
+  search = (!search) ? undefined : search
+  const result = await getProducts(search)
   event.reply('response-get-products', result)
 })
 
