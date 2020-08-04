@@ -21,13 +21,13 @@
       <q-markup-table class="table-responsive col-11" style="margin: 0 5px;">
         <thead>
           <tr>
-            <th v-for="(header, index) in showingColumns" :key="index" class="text-left">{{ header.name }}</th>
+            <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">{{ header.name }}</th>
             <th class="text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(row, rowId) in rendering" :key="rowId">
-            <td v-for="(cell, cellId) in row" :key="cellId" class="text-right">
+            <td v-for="(cell, cellId) in row" v-show="!cell.hidden" :key="cellId" class="text-right">
               <span v-if="typeof cell.edit === 'undefined'">
                 {{ cell.original }}
               </span>
@@ -84,7 +84,8 @@
           </tr>
         </tbody>
       </q-markup-table>
-      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-page-sticky position="bottom-right" :offset="[40, 40]">
+        <q-btn round dense icon="save" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
         <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products')" color="secondary" />
       </q-page-sticky>
     </q-scroll-area>
@@ -139,6 +140,7 @@ export default {
           if (field._id) inside._id = true
           if (field.table) inside.table = field.table
           if (field.type) inside.type = field.type
+          if (field.hidden) inside.hidden = field.hidden
           selected.push(inside)
         })
         return selected
@@ -172,12 +174,27 @@ export default {
       })
     },
 
+    saveAllChanges () {
+      const modifiedRowIndexes = this.rendering.reduce((acum, valorActual, index) => {
+        const isModified = valorActual.some(obj => obj.edit !== null && obj.edit !== undefined)
+        if (isModified) acum.push(index)
+        return acum
+      }, [])
+      modifiedRowIndexes.forEach(rowId => {
+        this.saveToDB(rowId, true)
+      })
+      this.$q.notify({
+        color: 'primary',
+        textColor: 'white',
+        icon: 'check_circle',
+        message: 'Sus productos han sido actualizados. Cualquier error le será notificado'
+      })
+    },
+
     createPayload (rowId, table = '') {
-      let row = JSON.parse(JSON.stringify(this.rendering[rowId]))
       const res = {}
-      if (table !== '') row = row.filter(field => field.table === table)
-      row.map(field => {
-        if (typeof field.edit !== 'undefined') {
+      this.rendering[rowId].map(field => {
+        if (typeof field.edit !== 'undefined' && (table === '' || field.table === table)) {
           if (field.edit !== null) {
             res[field.name] = field.edit
           } else {
@@ -189,13 +206,14 @@ export default {
     },
 
     findDataId (rowId, table = '') {
-      let row = JSON.parse(JSON.stringify(this.rendering[rowId]))
-      if (table !== '') row = row.filter(field => field.table === table)
-      const idField = row.find(field => field._id === true)
+      const idField = this.rendering[rowId].find(
+        field => field._id === true &&
+        (table === '' || field.table === table)
+      )
       return (idField) ? { name: idField.name, value: idField.original, tableId: rowId } : undefined
     },
 
-    saveToDB (rowId) {
+    saveToDB (rowId, hideSuccess = false) {
       const res = this.createPayload(rowId, 'products')
       const idObject = this.findDataId(rowId, 'products')
       const { UNITS } = this.createPayload(rowId, 'stockcurrent')
@@ -206,28 +224,19 @@ export default {
         this.$q.electron.ipcRenderer.send('call-update-stocklevel', idObject, STOCKSECURITY, STOCKMAXIMUM)
       }
 
-      this.$q.electron.ipcRenderer.send('call-update-product', res, idObject)
+      this.$q.electron.ipcRenderer.send('call-update-product', res, idObject, hideSuccess)
       this.blocked.push(rowId)
     },
 
     onUpdatedProduct (event, res) {
       if (res.affected !== undefined && res.affected > 0) {
         this.saveChangesLocally(res.idObject.tableId, 'products')
-        this.$q.notify({
-          color: 'green-4',
-          textColor: 'white',
-          icon: 'check_circle',
-          message: 'Producto actualizado'
-        })
+        if (!res.hideSuccess) {
+          this.successMessage('Producto actualizado')
+        }
       } else {
         this.restoreRow(res.idObject.tableId, 'products')
-        this.$q.notify({
-          color: 'red-4',
-          textColor: 'white',
-          icon: 'warning',
-          message: `No se ha podido actualizar.
-          Codigo de error: ${res.error}`
-        })
+        this.errorMessage(`No se ha podido actualizar. Codigo de error: ${res.error}`)
       }
       const index = this.blocked.indexOf(res.idObject.tableId)
       if (index > -1) this.blocked.splice(index, 1)
@@ -251,11 +260,20 @@ export default {
       }
     },
 
-    errorMessage (msg) {
+    errorMessage (msg, icon = 'warning') {
       this.$q.notify({
         color: 'red-4',
         textColor: 'white',
-        icon: 'warning',
+        icon: icon,
+        message: msg
+      })
+    },
+
+    successMessage (msg, icon = 'check_circle') {
+      this.$q.notify({
+        color: 'green-4',
+        textColor: 'white',
+        icon: icon,
         message: msg
       })
     }

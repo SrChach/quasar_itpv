@@ -14,7 +14,7 @@ export default {
     return {
       data: [],
       showingColumns: [
-        { name: 'ID', editable: false, _id: true, table: 'products' },
+        { name: 'ID', editable: false, _id: true, table: 'products', hidden: true },
         { name: 'REFERENCE', editable: true, table: 'products' },
         { name: 'CATEGORIA', editable: false },
         { name: 'CODE', editable: true, table: 'products' },

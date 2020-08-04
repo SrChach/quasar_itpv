@@ -69,12 +69,13 @@ ipcMain.on('call-insert-products', async (event, product) => {
   event.reply('response-insert-products', result)
 })
 
-ipcMain.on('call-update-product', async (event, product, idObject) => {
+ipcMain.on('call-update-product', async (event, product, idObject, hideSuccess = false) => {
   const queryResult = await updateProduct(product, { [idObject.name]: idObject.value })
   const result = {
     affected: queryResult.affectedRows,
     error: queryResult.error,
-    idObject: idObject
+    idObject: idObject,
+    hideSuccess: hideSuccess
   }
   event.reply('response-update-product', result)
 })
