@@ -1,5 +1,5 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel } from '../queries.js'
+import { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertTemplateProducts } from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -109,4 +109,9 @@ ipcMain.on('call-check-admin', async (event, password) => {
 ipcMain.on('llamar-insertar-ticket', async (event, datos, resourceId) => {
   const result = await insertTicket(datos, resourceId)
   event.reply('responder-insertar-ticket', result, resourceId)
+})
+
+ipcMain.on('llamar-insertar-template', async (event, datos, templateType) => {
+  const result = await insertTemplateProducts(datos, templateType)
+  event.reply('responder-insertar-template', result, templateType)
 })

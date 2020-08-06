@@ -18,6 +18,7 @@
         </q-file>
       </div>
       <div class="col-12">
+        <q-btn color="primary" label="Cargar datos" icon-right="add_circle" @click="insertData()"/>
         <pre>{{ (parsedData !== null) ? parsedData : 'No has seleccionado nada' }}</pre>
       </div>
     </div>
@@ -35,7 +36,20 @@ export default {
       parsedData: null
     }
   },
+  created () {
+    this.$q.electron.ipcRenderer.on('responder-insertar-template', this.informResult)
+  },
+  destroyed () {
+    this.$q.electron.ipcRenderer.removeListener('responder-insertar-template', this.informResult)
+  },
   methods: {
+    insertData () {
+      console.log('paso1')
+      for (let i = 1; i < this.parsedData.length; i++) {
+        // console.log(this.parsedData[i])
+        this.$q.electron.ipcRenderer.send('llamar-insertar-template', this.parsedData[i], 1)
+      }
+    },
     onRejected (rejectedEntries) {
       // Notify plugin needs to be installed
       this.$q.notify({
@@ -73,6 +87,9 @@ export default {
 
       /** Leemos el archivo (Manda a llamar a la función) */
       reader.readAsArrayBuffer(archivo)
+    },
+    informResult (e, res) {
+      console.log(res)
     }
   }
 }

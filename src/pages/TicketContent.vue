@@ -1,6 +1,7 @@
 <template>
+<center>
   <q-page padding class="q-pa-md q-gutter-sm">
-    <h4>Cambiar el contenido de los tickets</h4>
+    <h4>Edicion del encabezado del ticket</h4>
 
     <label for="tam">Selecciona el tamañano del papel de tu impresora: </label>
     <select id="tam" v-model="seleccionado" @change="formHasErrors">
@@ -33,6 +34,7 @@
       </div>
     </form>
   </q-page>
+</center>
 </template>
 
 <script>

@@ -6,6 +6,7 @@
           v-model="search"
           label="Busca por nombre, código o referencia"
           type="text" outlined rounded dense clearable color="secondary" class="q-mb-sm"
+          @keyup.enter="$q.electron.ipcRenderer.send('call-get-products', search)"
         >
           <template v-slot:after>
             <q-btn round dense flat icon="search" @click="$q.electron.ipcRenderer.send('call-get-products', search)"/>

@@ -74,6 +74,14 @@ const insertTicket = async (datos, resourceId) => {
   return result
 }
 
+const insertTemplateProducts = async (datos) => {
+  var query = "INSERT INTO products VALUES ('" + datos[1] + "', '" + datos[0] + "', '" + datos[1] + "'  , null, '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "', '000', '000', null, null, null, null, '0', '0', null, '0', '" + datos[20] + "', '" + datos[8] + "', '" + datos[7] + "', '" + datos[10] + "', '" + datos[11] + "', '" + datos[12] + "', '" + datos[13] + "', '" + datos[14] + "', '" + datos[15] + "', '" + datos[16] + "', null, '" + datos[19] + "', '" + datos[6] + "', '" + datos[18] + "', '0')"
+  if (conn === null)
+    conn = await getConnection()
+  const result = await conn.query(query)
+  return result
+}
+
 const updateStockCurrent = async (productId, units) => {
   if (conn === null) conn = await getConnection()
   const check = await conn.query('SELECT * FROM stockcurrent WHERE PRODUCT = ? AND LOCATION = 0', [productId])
@@ -111,4 +119,4 @@ const updateStockLevel = async (productId, min, max) => {
   }
 }
 
-module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel }
+module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertTemplateProducts }
