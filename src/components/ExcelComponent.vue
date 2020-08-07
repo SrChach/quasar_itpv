@@ -18,7 +18,7 @@
 
 <script>
 /** Utils */
-var XLSX = require('xlsx')
+import { read as xlsxRead, utils as xlsxUtils } from 'xlsx'
 
 export default {
   props: {
@@ -56,7 +56,7 @@ export default {
       reader.onload = function (e) {
         var data = e.target.result
         data = new Uint8Array(data)
-        var workbook = XLSX.read(data, {
+        var workbook = xlsxRead(data, {
           type: 'array'
         })
 
@@ -65,7 +65,7 @@ export default {
         /* Get worksheet */
         var worksheet = workbook.Sheets[firstSheetName]
         // It will prints with header and contents ex) Name, Home...
-        var json = XLSX.utils.sheet_to_json(worksheet, {
+        var json = xlsxUtils.sheet_to_json(worksheet, {
           header: 1
         })
         thisComponent.updateExcelData(json)

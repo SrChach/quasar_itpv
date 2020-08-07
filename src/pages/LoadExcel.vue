@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page>
     <div class="row justify-center items-center">
       <div class="col-12">
         <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="No has seleccionado nada" />
@@ -13,34 +13,19 @@
         <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon-right="add_circle" @click="insertData()"/>
         <span v-else>Esperando a que se inserten los productos</span>
       </div>
-      <div class="col-12 col-sm-8 q-pa-md q-gutter-sm">
-        <q-expansion-item
-          expand-separator
-          icon="error"
-          label="Hubo errores al insertar"
-          header-class="bg-red text-white"
-          v-if="errors.length > 0"
-        >
-          <q-list bordered separator>
-            <q-item v-ripple v-for="(error, i) in errors" :key="i">
-              <q-item-section>
-                <q-item-label overline>Error en la fila: {{ error.arrayId + 2 }}</q-item-label>
-                <q-item-label>{{ error.error }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-expansion-item>
-      </div>
     </div>
+
+    <excel-errors v-if="errors.length > 0" :errors="errors" :config="headerConfig" :rows="productos" :saveTo="saveTo" sheetTitle="Productos"/>
   </q-page>
 </template>
 
 <script>
 /** Utils */
-import { cleanExcelData, reverseChanges, saveExcel } from '../utils/process-array-excel.js'
+import { cleanExcelData } from '../utils/process-array-excel.js'
 
 /** Components */
 import load from '../components/ExcelComponent'
+import excelErrors from '../components/ExcelErrors'
 
 export default {
   name: 'PageIndex',
@@ -49,6 +34,7 @@ export default {
       productos: [],
       isSending: false,
       errors: [],
+      saveTo: `${process.env.HOME}/template_productos_itpv.xlsx`,
       headerConfig: [ // codigo de barras: ID: [ID, CODE]
         { match: val => /sku/i.test(val), databaseName: 'REFERENCE', col: 'SKU' },
         { match: val => /c[oó]digo(.*)barras/i.test(val), databaseName: 'ID', col: 'CODIGO DE BARRAS' },
@@ -73,10 +59,10 @@ export default {
     }
   },
   created () {
-    this.$q.electron.ipcRenderer.on('response-insert-products', this.informResult)
+    this.$q.electron.ipcRenderer.on('response-insert-products', this.manageResponse)
   },
   destroyed () {
-    this.$q.electron.ipcRenderer.removeListener('response-insert-products', this.informResult)
+    this.$q.electron.ipcRenderer.removeListener('response-insert-products', this.manageResponse)
   },
   methods: {
     setProductsData (data) {
@@ -93,28 +79,15 @@ export default {
       this.$q.electron.ipcRenderer.send('call-insert-products', this.productos, true)
       this.isSending = true
     },
-    informResult (e, res) {
+    manageResponse (e, res) {
       /** For template configuration */
       this.isSending = false
       this.errors = res
-
-      /** Filtering to get original stylesheet but just witj errored rows */
-      const failed = this.filterFailed(this.productos, res)
-      const original = reverseChanges(failed, this.headerConfig)
-
-      console.log({ failed, original })
-
-      const createdStatus = saveExcel(original, `${process.env.HOME}/template_productos_itpv.xlsx`, 'Productos')
-      const typeAlert = (createdStatus.error === undefined) ? 'positive' : 'negative'
-      this.$q.notify({ type: typeAlert, message: createdStatus.message })
-    },
-    filterFailed (products = [], allErrors = []) {
-      const arr = allErrors.map(o => products[o.arrayId])
-      return arr
     }
   },
   components: {
-    'componente-de-excel': load
+    'componente-de-excel': load,
+    'excel-errors': excelErrors
   }
 }
 </script>
