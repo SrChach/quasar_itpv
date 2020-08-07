@@ -48,12 +48,36 @@ const checkAdminUser = async (pass = '') => {
     return null
 }
 
-/** Old app */
-const insertProduct = async (product) => {
+const insertProduct = async (product, fromExcel = false, arrayId) => {
+  if (fromExcel === true) {
+    product.CATEGORY = '000'
+    product.TAXCAT = '000',
+    product.ISCOM = 0,
+    product.ISSCALE = 0,
+    product.PRECIO_DLL = 0,
+    product.DISCOUNT = 0
+  }
   if (conn === null)
     conn = await getConnection()
-  const result = await conn.query('INSERT INTO products SET ?', product)
-  return result
+  try {
+    const result = await conn.query('INSERT INTO products SET ?', product)
+    return { affectedRows: result.affectedRows }
+  } catch (error) {
+    let obj = { error: error.sqlMessage, affectedRows: 0 }
+    if (fromExcel === true && arrayId !== undefined) obj.arrayId = arrayId
+    return obj
+  }
+}
+
+// Solo retornará los elementos que fallaron
+const insertProducts = async (products = [], fromExcel = false) => {
+  let results = []
+  for (let i = 0; i < products.length; i++) {
+    const singleRes = await insertProduct(products[i], fromExcel, i)
+    if (singleRes.affectedRows < 1) results.push(singleRes)
+  }
+
+  return results
 }
 
 const updateProduct = async (product, idObject) => {
@@ -75,7 +99,7 @@ const insertTicket = async (datos, resourceId) => {
 }
 
 const insertTemplateProducts = async (datos) => {
-  var query = "INSERT INTO products VALUES ('" + datos[1] + "', '" + datos[0] + "', '" + datos[1] + "'  , null, '" + datos[2] + "', '" + datos[3] + "', '" + datos[4] + "', '000', '000', null, null, null, null, 0, 0, null, 0, '" + datos[20] + "', '" + datos[8] + "', '" + datos[7] + "', '" + datos[10] + "', '" + datos[11] + "', '" + datos[12] + "', '" + datos[13] + "', '" + datos[14] + "', '" + datos[15] + "', '" + datos[16] + "', null, '" + datos[19] + "', '" + datos[6] + "', '" + datos[18] + "', '0')"
+  var query = `INSERT INTO products VALUES ('${datos[1]}', '${datos[0]}', '${datos[1]}'  , null, '${datos[2]}', '${datos[3]}', '${datos[4]}', '000', '000', null, null, null, null, 0, 0, null, 0, '${datos[20]}', '${datos[8]}', '${datos[7]}', '${datos[10]}', '${datos[11]}', '${datos[12]}', '${datos[13]}', '${datos[14]}', '${datos[15]}', '${datos[16]}', null, '${datos[19]}', '${datos[6]}', '${datos[18]}', '0')`
   if (conn === null)
     conn = await getConnection()
   const result = await conn.query(query)
@@ -119,4 +143,4 @@ const updateStockLevel = async (productId, min, max) => {
   }
 }
 
-module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertTemplateProducts }
+module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertTemplateProducts, insertProducts }

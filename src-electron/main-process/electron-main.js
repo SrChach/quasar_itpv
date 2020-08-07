@@ -1,5 +1,8 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertTemplateProducts } from '../queries.js'
+import {
+  getProducts, checkAdminUser, insertTicket, updateProduct, updateStockCurrent,
+  updateStockLevel, insertTemplateProducts, insertProducts
+} from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -64,8 +67,8 @@ ipcMain.on('call-get-products', async (event, search) => {
   event.reply('response-get-products', result)
 })
 
-ipcMain.on('call-insert-products', async (event, product) => {
-  const result = await insertProduct(product)
+ipcMain.on('call-insert-products', async (event, products, fromExcel = false) => {
+  const result = await insertProducts(products, fromExcel)
   event.reply('response-insert-products', result)
 })
 
