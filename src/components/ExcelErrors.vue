@@ -1,9 +1,6 @@
 <template>
   <div class="row justify-center items-center">
-    <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
-      <q-btn color="warning" label="Descargar excel con datos fallidos" icon-right="save" @click="saveErrorsFile()"/>
-    </div>
-    <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
+    <div class="col-12 col-sm-9 q-pa-md q-gutter-sm">
       <q-expansion-item
         expand-separator
         icon="error"
@@ -21,17 +18,25 @@
         </q-list>
       </q-expansion-item>
     </div>
+    <div class="col-12 col-sm-3 q-pa-md q-gutter-sm">
+      <q-btn color="warning" label="Template con datos a corregir" icon="save" @click="saveErrorsFile()"/>
+    </div>
     <div class="col-12 col-sm-10 q-pa-md q-gutter-sm">
       <div class="q-pa-md">
         <q-table
           style="margin: 0 10px"
           v-if="tableHeader.length > 0"
-          title="Columnas con errores"
+          title="Datos que no se insertaron"
+          class="bg-red-5 text-white"
+          table-class="bg-white text-black"
           :data="original"
           :columns="tableHeader"
           row-key="name"
         />
       </div>
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-btn fab icon="arrow_back" color="warning" label="Volver" @click="$emit('close')"/>
+      </q-page-sticky>
     </div>
   </div>
 </template>

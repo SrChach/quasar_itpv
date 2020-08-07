@@ -181,6 +181,11 @@ export default {
         if (isModified) acum.push(index)
         return acum
       }, [])
+      if (modifiedRowIndexes.length < 1) {
+        this.$q.notify({ type: 'warning', message: 'No tienes cambios para guardar' })
+        return
+      }
+
       modifiedRowIndexes.forEach(rowId => {
         this.saveToDB(rowId, true)
       })

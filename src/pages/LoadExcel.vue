@@ -1,22 +1,32 @@
 <template>
-  <q-page>
-    <div class="row justify-center items-center">
-      <div class="col-12">
-        <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="No has seleccionado nada" />
-        <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
+  <div>
+    <q-page class="flex flex-center" v-if="errors.length < 1">
+      <div class="row justify-center items-center">
+        <div class="col-12">
+          <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="No has seleccionado nada" />
+          <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
+        </div>
+        <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
+          <componente-de-excel v-show="!isSending" @change-excel="setProductsData"/>
+          <q-spinner-hourglass size="md" v-show="isSending" color="secondary"/>
+        </div>
+        <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
+          <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon="add_circle" @click="insertData()" />
+          <span v-else>Esperando a que se inserten los productos</span>
+        </div>
       </div>
-      <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
-        <componente-de-excel v-show="!isSending" @change-excel="setProductsData"/>
-        <q-spinner-hourglass size="md" v-show="isSending" color="secondary"/>
-      </div>
-      <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
-        <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon-right="add_circle" @click="insertData()"/>
-        <span v-else>Esperando a que se inserten los productos</span>
-      </div>
-    </div>
-
-    <excel-errors v-if="errors.length > 0" :errors="errors" :config="headerConfig" :rows="productos" :saveTo="saveTo" sheetTitle="Productos"/>
-  </q-page>
+    </q-page>
+    <q-page v-if="errors.length > 0">
+      <excel-errors
+        :errors="errors"
+        :config="headerConfig"
+        :rows="productos"
+        :saveTo="saveTo"
+        sheetTitle="Productos"
+        @close="reset()"
+      />
+    </q-page>
+  </div>
 </template>
 
 <script>
@@ -83,6 +93,15 @@ export default {
       /** For template configuration */
       this.isSending = false
       this.errors = res
+
+      this.$q.notify({
+        type: 'info',
+        message: 'Productos cargados. Cualquier error le será notificado'
+      })
+    },
+    reset () {
+      this.errors = []
+      this.productos = []
     }
   },
   components: {
