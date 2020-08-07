@@ -44,7 +44,7 @@ export default {
       productos: [],
       isSending: false,
       errors: [],
-      saveTo: `${process.env.HOME}/template_productos_itpv.xlsx`,
+      saveTo: `${process.env.HOMEPATH || process.env.HOME}/template_productos_itpv.xlsx`,
       headerConfig: [ // codigo de barras: ID: [ID, CODE]
         { match: val => /sku/i.test(val), databaseName: 'REFERENCE', col: 'SKU' },
         { match: val => /c[oó]digo(.*)barras/i.test(val), databaseName: 'ID', col: 'CODIGO DE BARRAS' },
