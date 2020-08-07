@@ -1,13 +1,14 @@
-// [
-//   {
-//     match: val => /^sku$/i.test(val),
-//     databaseName: 'SKU',
-//     default: 0,
-//     changes: val => val === 9 ? 'si' : 'no',
-//     validator: val => val === 'si'
-//   } // Add type conversion
-// ]
-// match: (function), databaseName: (String), default: (any, optional), changes: (function, optional), validator: (function, optional)
+/** utils */
+const { utils, writeFile } = require('xlsx')
+
+/** Header is in this form
+ * match: (function)
+ * databaseName: (String)
+ * default: (any, optional),
+ * changes: (function, optional),
+ * validator: (function, optional),
+ * col: (String)
+*/
 
 const makeValidationHeader = (header = [], config = []) => {
   const validationHeader = header.map(headField => {
@@ -49,4 +50,31 @@ const cleanExcelData = (products = [], config = []) => {
   return filtered
 }
 
-export default cleanExcelData
+const reverseChanges = (products = [], config = []) => {
+  const reversed = products.map(prod => {
+    const simplified = {}
+    for (const field in prod) {
+      if (field !== '___invalid') {
+        const el = config.find(c => c.databaseName === field)
+        if (el !== undefined && el.col !== undefined) simplified[el.col] = prod[field]
+      }
+    }
+    return simplified
+  })
+  return reversed
+}
+
+const saveExcel = (data, target, sheetName = 'test') => {
+  try {
+    const ws = utils.json_to_sheet(data)
+    const wb = utils.book_new()
+    utils.book_append_sheet(wb, ws, sheetName)
+
+    writeFile(wb, target, { type: 'file' })
+    return { message: `Excel guardado en ${target}` }
+  } catch (error) {
+    return { error: error, message: 'Oops! Algo falló al crear el Excel' }
+  }
+}
+
+module.exports = { cleanExcelData, reverseChanges, saveExcel }
