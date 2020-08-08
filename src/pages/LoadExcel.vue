@@ -3,7 +3,7 @@
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
         <div class="col-12">
-          <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="No has seleccionado nada" />
+          <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
           <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
         </div>
         <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
@@ -63,7 +63,10 @@ export default {
         { match: val => /precio(.*)8/i.test(val), databaseName: 'PRICESELL8', changes: val => Number(val), col: 'PRECIO 8' },
         { match: val => /clave(.*)producto(.*)SAT/i.test(val), databaseName: 'SERIE', col: 'CLAVE DE PRODUCTO SAT' },
         { match: val => /l[ií]nea/i.test(val), databaseName: 'MODELO', col: 'LINEA' },
-        { match: val => /monedero/i.test(val), databaseName: 'MONEDERO', changes: val => Number(val), col: 'PORCENTAJE MONEDERO' }
+        { match: val => /monedero/i.test(val), databaseName: 'MONEDERO', changes: val => Number(val), col: 'PORCENTAJE MONEDERO' },
+        { match: val => /existencias/i.test(val), databaseName: 'UNITS', changes: val => (val !== '') ? Number(val) : val, col: 'EXISTENCIAS' },
+        { match: val => /stock(.*)m[ií]nimo/i.test(val), databaseName: 'STOCKSECURITY', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MINIMO' },
+        { match: val => /stock(.*)m[aá]ximo/i.test(val), databaseName: 'STOCKMAXIMUM', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MAXIMO' }
         /** { validator: val => true } */
       ]
     }
@@ -83,7 +86,7 @@ export default {
     },
     insertData () {
       if (this.productos.length < 1) {
-        this.$q.notify({ type: 'negative', message: 'Carga algo en el excel antes' })
+        this.$q.notify({ type: 'negative', message: 'Carga un archivo válido antes' })
         return
       }
       this.$q.electron.ipcRenderer.send('call-insert-products', this.productos, true)

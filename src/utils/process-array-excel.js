@@ -10,6 +10,13 @@ const { utils, writeFile } = require('xlsx')
  * col: (String)
 */
 
+const isEmpty = (obj) => {
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) return false
+  }
+  return true
+}
+
 const makeValidationHeader = (header = [], config = []) => {
   const validationHeader = header.map(headField => {
     const res = config.find(el => el.match(headField) === true)
@@ -46,7 +53,8 @@ const cleanExcelData = (inputData = [], config = []) => {
     }, {})
 
     return currentRow
-  })
+  }).filter(v => !isEmpty(v))
+
   return filtered
 }
 

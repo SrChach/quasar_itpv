@@ -1,7 +1,7 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
 import {
-  getProducts, checkAdminUser, insertTicket, updateProduct, updateStockCurrent,
-  updateStockLevel, insertTemplateProducts, insertProducts
+  getProducts, checkAdminUser, insertTicket, updateProduct,
+  updateStockCurrent, updateStockLevel, insertProducts
 } from '../queries.js'
 
 try {
@@ -112,9 +112,4 @@ ipcMain.on('call-check-admin', async (event, password) => {
 ipcMain.on('llamar-insertar-ticket', async (event, datos, resourceId) => {
   const result = await insertTicket(datos, resourceId)
   event.reply('responder-insertar-ticket', result, resourceId)
-})
-
-ipcMain.on('llamar-insertar-template', async (event, datos, templateType) => {
-  const result = await insertTemplateProducts(datos, templateType)
-  event.reply('responder-insertar-template', result, templateType)
 })

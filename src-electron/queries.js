@@ -61,7 +61,7 @@ const insertProduct = async (product, fromExcel = false, arrayId) => {
     conn = await getConnection()
   try {
     const result = await conn.query('INSERT INTO products SET ?', product)
-    return { affectedRows: result.affectedRows }
+    return { affectedRows: result.affectedRows, other: result }
   } catch (error) {
     let obj = { error: error.sqlMessage, affectedRows: 0 }
     if (fromExcel === true && arrayId !== undefined) obj.arrayId = arrayId
@@ -73,8 +73,31 @@ const insertProduct = async (product, fromExcel = false, arrayId) => {
 const insertProducts = async (products = [], fromExcel = false) => {
   let results = []
   for (let i = 0; i < products.length; i++) {
+    const productId = products[i].ID
+
+    let units = products[i].UNITS
+    let min = products[i].STOCKSECURITY
+    let max = products[i].STOCKMAXIMUM
+
+    units = (typeof units === 'number' && !Number.isNaN(units)) ? units : null
+    min = (typeof min === 'number' && !Number.isNaN(min)) ? min : null
+    max = (typeof max === 'number' && !Number.isNaN(max)) ? max : null
+
+    delete products[i].UNITS
+    delete products[i].STOCKSECURITY
+    delete products[i].STOCKMAXIMUM
+
     const singleRes = await insertProduct(products[i], fromExcel, i)
-    if (singleRes.affectedRows < 1) results.push(singleRes)
+    if (singleRes.affectedRows < 1) {
+      results.push(singleRes)
+    } else {
+      /** Para llegar aquí, tuvo que haber insertado ya el producto
+       *  NOTA: Si se quieren imprimir los resultados de updatestockcurrent y updatestocklevel,
+       *    se les tiene que poner 'await' enfrente
+       */
+      if (units !== null) updateStockCurrent(productId, units)
+      if (min !== null || max !== null) updateStockLevel(productId, min, max)
+    }
   }
 
   return results
@@ -95,14 +118,6 @@ const insertTicket = async (datos, resourceId) => {
   if (conn === null)
     conn = await getConnection()
   const result = await conn.query('UPDATE resources SET resources.CONTENT=' + datos + ' WHERE resources.ID="' + resourceId + '"')
-  return result
-}
-
-const insertTemplateProducts = async (datos) => {
-  var query = `INSERT INTO products VALUES ('${datos[1]}', '${datos[0]}', '${datos[1]}'  , null, '${datos[2]}', '${datos[3]}', '${datos[4]}', '000', '000', null, null, null, null, 0, 0, null, 0, '${datos[20]}', '${datos[8]}', '${datos[7]}', '${datos[10]}', '${datos[11]}', '${datos[12]}', '${datos[13]}', '${datos[14]}', '${datos[15]}', '${datos[16]}', null, '${datos[19]}', '${datos[6]}', '${datos[18]}', '0')`
-  if (conn === null)
-    conn = await getConnection()
-  const result = await conn.query(query)
   return result
 }
 
@@ -143,4 +158,4 @@ const updateStockLevel = async (productId, min, max) => {
   }
 }
 
-module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertTemplateProducts, insertProducts }
+module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertProducts }
