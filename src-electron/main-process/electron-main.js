@@ -1,7 +1,7 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
 import {
   getProducts, checkAdminUser, insertTicket, updateProduct,
-  updateStockCurrent, updateStockLevel, insertProducts
+  updateStockCurrent, updateStockLevel, insertProducts, insertCustomers
 } from '../queries.js'
 
 try {
@@ -70,6 +70,11 @@ ipcMain.on('call-get-products', async (event, search) => {
 ipcMain.on('call-insert-products', async (event, products, fromExcel = false) => {
   const result = await insertProducts(products, fromExcel)
   event.reply('response-insert-products', result)
+})
+
+ipcMain.on('call-insert-customers', async (event, customers, fromExcel = false) => {
+  const result = await insertCustomers(customers, fromExcel)
+  event.reply('response-insert-customers', result)
 })
 
 ipcMain.on('call-update-product', async (event, product, idObject, hideSuccess = false) => {

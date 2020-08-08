@@ -103,6 +103,31 @@ const insertProducts = async (products = [], fromExcel = false) => {
   return results
 }
 
+const insertCustomer = async (customer, fromExcel = false, arrayId) => {
+  if (conn === null)
+    conn = await getConnection()
+  try {
+    const result = await conn.query('INSERT INTO customers SET ?', customer)
+    return { affectedRows: result.affectedRows, other: result }
+  } catch (error) {
+    let obj = { error: error.sqlMessage, affectedRows: 0 }
+    if (fromExcel === true && arrayId !== undefined) obj.arrayId = arrayId
+    return obj
+  }
+}
+
+const insertCustomers = async (customers = [], fromExcel = false) => {
+  let results = []
+  for (let i = 0; i < customers.length; i++) {
+    const singleRes = await insertCustomer(customers[i], fromExcel, i)
+    if (singleRes.affectedRows < 1) {
+      results.push(singleRes)
+    }
+  }
+
+  return results
+}
+
 const updateProduct = async (product, idObject) => {
   if (conn === null)
     conn = await getConnection()
@@ -158,4 +183,7 @@ const updateStockLevel = async (productId, min, max) => {
   }
 }
 
-module.exports = { getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct, updateStockCurrent, updateStockLevel, insertProducts }
+module.exports = {
+  getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct,
+  updateStockCurrent, updateStockLevel, insertProducts, insertCustomers
+}

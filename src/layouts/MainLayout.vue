@@ -78,16 +78,22 @@ export default {
           link: '/'
         },
         {
-          title: 'Load Excel',
-          caption: 'Carga datos desde un excel',
-          icon: 'arrow_circle_up',
-          link: '/carga'
-        },
-        {
           title: 'Actualizar Productos',
           caption: 'Ver y actualizar datos de los productos',
           icon: 'fact_check',
           link: '/products'
+        },
+        {
+          title: 'Cargar productos',
+          caption: 'Carga productos desde un excel',
+          icon: 'tapas',
+          link: '/carga'
+        },
+        {
+          title: 'Cargar clientes',
+          caption: 'Cargar clientes desde Excel',
+          icon: 'person_add',
+          link: '/customers'
         },
         {
           title: 'Cargar tickets',

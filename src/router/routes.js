@@ -8,8 +8,9 @@ const routes = [
     },
     children: [
       { path: '', component: () => import('pages/Index.vue') },
-      { path: 'carga', component: () => import('pages/LoadExcel.vue') },
+      { path: 'carga', component: () => import('pages/LoadProducts.vue') },
       { path: 'tickets', component: () => import('pages/TicketContent.vue') },
+      { path: 'customers', component: () => import('pages/LoadCustomers.vue') },
       { path: 'products', component: () => import('pages/UpdateProducts.vue') }
     ]
   },
