@@ -45,13 +45,13 @@ export default {
       isSending: false,
       errors: [],
       saveTo: `${process.env.HOMEPATH || process.env.HOME}/template_clientes_itpv.xlsx`,
-      headerConfig: [ // codigo de barras: ID: [ID, CODE]
+      headerConfig: [
         { match: val => /rfc/i.test(val), databaseName: 'ID', col: 'RFC' },
         { match: val => /clave(.*)busqueda/i.test(val), databaseName: 'SEARCHKEY', col: 'CLAVE DE BUSQUEDA' },
         { match: val => /nombre(.*)cliente/i.test(val), databaseName: 'NAME', col: 'NOMBRE DEL CLIENTE' },
         { match: val => /tarjeta/i.test(val), databaseName: 'CARD', col: 'TARJETA' },
         { match: val => /deuda(.*)m[aá]xima/i.test(val), databaseName: 'MAXDEBT', changes: val => Number(val), col: 'DEUDA MAXIMA' },
-        { match: val => /monedero/i.test(val), databaseName: 'MONEDERO', col: 'MONEDERO' }
+        { match: val => /monedero/i.test(val), default: 0, databaseName: 'MONEDERO', changes: val => Number(val), col: 'MONEDERO' }
       ]
     }
   },
