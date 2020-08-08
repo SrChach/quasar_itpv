@@ -24,16 +24,16 @@ const makeValidationHeader = (header = [], config = []) => {
   return validationHeader
 }
 
-const cleanExcelData = (products = [], config = []) => {
-  products = JSON.parse(JSON.stringify(products))
-  if (!Array.isArray(products)) return []
-  if (products.length < 1) return []
+const cleanExcelData = (inputData = [], config = []) => {
+  inputData = JSON.parse(JSON.stringify(inputData))
+  if (!Array.isArray(inputData)) return []
+  if (inputData.length < 1) return []
 
   // Obtenemos primer fila
-  const validationHeader = makeValidationHeader(products[0], config)
-  products.shift()
-  const filtered = products.map(prod => {
-    const currentRow = prod.reduce((acum, valorActual, index) => {
+  const validationHeader = makeValidationHeader(inputData[0], config)
+  inputData.shift()
+  const filtered = inputData.map(inputRow => {
+    const currentRow = inputRow.reduce((acum, valorActual, index) => {
       const headField = validationHeader[index]
       if (headField === undefined) return acum
 
@@ -50,18 +50,27 @@ const cleanExcelData = (products = [], config = []) => {
   return filtered
 }
 
-const reverseChanges = (products = [], config = []) => {
-  const reversed = products.map(prod => {
-    const simplified = {}
-    for (const field in prod) {
+const toOriginalFormat = (processedArray = [], config = []) => {
+  let missingFields = null
+  const formattedBack = processedArray.map(row => {
+    const original = {}
+    for (const field in row) {
       if (field !== '___invalid') {
         const el = config.find(c => c.databaseName === field)
-        if (el !== undefined && el.col !== undefined) simplified[el.col] = prod[field]
+        if (el !== undefined && el.col !== undefined) original[el.col] = row[field]
       }
     }
-    return simplified
+    if (missingFields === null) {
+      missingFields = config.reduce((acum, current) => {
+        const inObject = Object.prototype.hasOwnProperty.call(original, current.col)
+        if (!inObject) acum.push(current.col)
+        return acum
+      }, [])
+    }
+    missingFields.forEach(field => { original[field] = '' })
+    return original
   })
-  return reversed
+  return formattedBack
 }
 
 const saveExcel = (data, target, sheetName = 'test') => {
@@ -77,4 +86,4 @@ const saveExcel = (data, target, sheetName = 'test') => {
   }
 }
 
-module.exports = { cleanExcelData, reverseChanges, saveExcel }
+module.exports = { cleanExcelData, toOriginalFormat, saveExcel }

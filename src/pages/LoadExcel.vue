@@ -53,7 +53,7 @@ export default {
         { match: val => /precio(.*)venta/i.test(val), databaseName: 'PRICESELL', changes: val => Number(val), col: 'PRECIO VENTA ANTES DE IMP' },
         { match: val => /unidad(.*)medida(.*)sat/i.test(val), databaseName: 'MEDIDA', col: 'UNIDAD DE MEDIDA SAT' },
         { match: val => /proveedor/i.test(val), databaseName: 'PROVEEDOR', col: 'PROVEEDOR' },
-        { match: val => /marca/i.test(val), databaseName: 'MARCA', COL: 'MARCA' },
+        { match: val => /marca/i.test(val), databaseName: 'MARCA', col: 'MARCA' },
         { match: val => /precio(.*)2/i.test(val), databaseName: 'PRICESELL2', changes: val => Number(val), col: 'PRECIO 2' },
         { match: val => /precio(.*)3/i.test(val), databaseName: 'PRICESELL3', changes: val => Number(val), col: 'PRECIO 3' },
         { match: val => /precio(.*)4/i.test(val), databaseName: 'PRICESELL4', changes: val => Number(val), col: 'PRECIO 4' },

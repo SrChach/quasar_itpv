@@ -43,7 +43,7 @@
 
 <script>
 /** Utils */
-import { reverseChanges, saveExcel } from '../utils/process-array-excel.js'
+import { toOriginalFormat, saveExcel } from '../utils/process-array-excel.js'
 
 export default {
   props: {
@@ -59,7 +59,7 @@ export default {
   }),
   created () {
     const failed = this.errors.map(err => this.rows[err.arrayId])
-    this.original = reverseChanges(failed, this.config)
+    this.original = toOriginalFormat(failed, this.config)
 
     if (this.original.length > 0) {
       for (const field in this.original[0]) {
