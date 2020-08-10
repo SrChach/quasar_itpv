@@ -88,7 +88,7 @@ const saveExcel = (data, target, sheetName = 'test') => {
     utils.book_append_sheet(wb, ws, sheetName)
 
     writeFile(wb, target, { type: 'file' })
-    return { message: `Excel guardado en ${target}` }
+    return { message: `Excel guardado en tu escritorio: \n ${target}` }
   } catch (error) {
     return { error: error, message: 'Oops! Algo falló al crear el Excel' }
   }

@@ -1,6 +1,14 @@
 <template>
   <div class="row justify-center items-center">
-    <div class="col-12 col-sm-9 q-pa-md q-gutter-sm">
+    <div class="col-12 col-sm-12 q-pa-md q-gutter-sm text-center">
+      <q-banner rounded class="bg-info text-white">
+        <p>De click en el siguiente botón para generar  una plantilla de los productos que no pudieron cargarse</p>
+        <p><b>Corrija los errores para cargar estos datos nuevamente.</b></p>
+        <hr>
+        <q-btn color="warning" label="Generar plantilla con datos a corregir" icon="save" @click="saveErrorsFile()"/>
+      </q-banner>
+    </div>
+    <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
       <q-expansion-item
         expand-separator
         icon="error"
@@ -17,9 +25,6 @@
           </q-item>
         </q-list>
       </q-expansion-item>
-    </div>
-    <div class="col-12 col-sm-3 q-pa-md q-gutter-sm">
-      <q-btn color="warning" label="Template con datos a corregir" icon="save" @click="saveErrorsFile()"/>
     </div>
     <div class="col-12 col-sm-10 q-pa-md q-gutter-sm">
       <div class="q-pa-md">

@@ -50,10 +50,8 @@ const checkAdminUser = async (pass = '') => {
 
 const insertProduct = async (product, fromExcel = false, arrayId) => {
   if (fromExcel === true) {
-    product.CATEGORY = '000'
-    product.TAXCAT = '000',
+    product.CATEGORY = '000',
     product.ISCOM = 0,
-    product.ISSCALE = 0,
     product.PRECIO_DLL = 0,
     product.DISCOUNT = 0
   }

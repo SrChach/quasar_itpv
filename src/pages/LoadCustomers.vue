@@ -3,6 +3,10 @@
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
         <div class="col-12">
+          <h4>CARGA MASIVA DE CLIENTES DESDE ARCHIVO EXCEL</h4>
+          <p>Para cargar una lista de clientes de forma masiva desde un archivo excel, descargue la plantilla ejemplo y llene los datos solicitados</p>
+          <p>Cargue la plantilla final seleccionando el archivo y presionando el botón cargar</p>
+          <br>
           <q-chip v-if="(clientes.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
           <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
         </div>
@@ -44,14 +48,26 @@ export default {
       clientes: [],
       isSending: false,
       errors: [],
-      saveTo: `${process.env.HOMEPATH || process.env.HOME}/template_clientes_itpv.xlsx`,
+      saveTo: `${process.env.HOMEPATH || process.env.HOME}${(process.env.HOMEPATH !== null) ? '/Desktop' : ''}/plantilla_clientes_itpv.xlsx`,
       headerConfig: [
         { match: val => /rfc/i.test(val), databaseName: 'ID', col: 'RFC' },
         { match: val => /clave(.*)busqueda/i.test(val), databaseName: 'SEARCHKEY', col: 'CLAVE DE BUSQUEDA' },
         { match: val => /nombre(.*)cliente/i.test(val), databaseName: 'NAME', col: 'NOMBRE DEL CLIENTE' },
         { match: val => /tarjeta/i.test(val), databaseName: 'CARD', col: 'TARJETA' },
         { match: val => /deuda(.*)m[aá]xima/i.test(val), databaseName: 'MAXDEBT', changes: val => Number(val), col: 'DEUDA MAXIMA' },
-        { match: val => /monedero/i.test(val), default: 0, databaseName: 'MONEDERO', changes: val => Number(val), col: 'MONEDERO' }
+        { match: val => /monedero(.*)activo/i.test(val), default: 0, databaseName: 'MONEDERO_ACTIVO', changes: val => (/(.*)si(.*)/i.test(val)) ? 1 : 0, col: 'MONEDERO ACTIVO' },
+        { match: val => /calle/i.test(val), databaseName: 'ADDRESS', col: 'CALLE' },
+        { match: val => /numero/i.test(val), databaseName: 'ADDRESS2', col: 'NUMERO' },
+        { match: val => /codigo(.*)postal/i.test(val), databaseName: 'POSTAL', col: 'CODIGO POSTAL' },
+        { match: val => /colonia/i.test(val), databaseName: 'PHONE2', col: 'COLONIA' },
+        { match: val => /municipio/i.test(val), databaseName: 'CITY', col: 'MUNICIPIO' },
+        { match: val => /estado/i.test(val), databaseName: 'REGION', col: 'ESTADO' },
+        { match: val => /pais/i.test(val), databaseName: 'COUNTRY', col: 'PAIS' },
+        { match: val => /nombre/i.test(val), databaseName: 'FIRSTNAME', col: 'NOMBRE' },
+        { match: val => /apellidos/i.test(val), databaseName: 'LASTNAME', col: 'APELLIDOS' },
+        { match: val => /email/i.test(val), databaseName: 'EMAIL', col: 'EMAIL' },
+        { match: val => /telefono/i.test(val), databaseName: 'PHONE', col: 'TELEFONO' },
+        { match: val => /notas/i.test(val), databaseName: 'NOTES', col: 'NOTAS' }
       ]
     }
   },

@@ -3,6 +3,9 @@
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
         <div class="col-12">
+          <h4>CARGA MASIVA DE PRODUCTOS DESDE ARCHIVO EXCEL</h4>
+          <p>Para cargar una lista de productos de forma masiva desde un archivo excel, descargue la plantilla ejemplo y llene los datos solicitados.</p>
+          <p>Cargue la plantilla final seleccionando el archivo y presionando el botón cargar.</p>
           <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
           <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
         </div>
@@ -44,7 +47,7 @@ export default {
       productos: [],
       isSending: false,
       errors: [],
-      saveTo: `${process.env.HOMEPATH || process.env.HOME}/template_productos_itpv.xlsx`,
+      saveTo: `${process.env.HOMEPATH || process.env.HOME}${(process.env.HOMEPATH !== null) ? '/Desktop' : ''}/plantilla_productos_itpv.xlsx`,
       headerConfig: [ // codigo de barras: ID: [ID, CODE]
         { match: val => /sku/i.test(val), databaseName: 'REFERENCE', col: 'SKU' },
         { match: val => /c[oó]digo(.*)barras/i.test(val), databaseName: 'ID', col: 'CODIGO DE BARRAS' },
@@ -66,7 +69,9 @@ export default {
         { match: val => /monedero/i.test(val), databaseName: 'MONEDERO', changes: val => Number(val), col: 'PORCENTAJE MONEDERO' },
         { match: val => /existencias/i.test(val), databaseName: 'UNITS', changes: val => (val !== '') ? Number(val) : val, col: 'EXISTENCIAS' },
         { match: val => /stock(.*)m[ií]nimo/i.test(val), databaseName: 'STOCKSECURITY', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MINIMO' },
-        { match: val => /stock(.*)m[aá]ximo/i.test(val), databaseName: 'STOCKMAXIMUM', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MAXIMO' }
+        { match: val => /stock(.*)m[aá]ximo/i.test(val), databaseName: 'STOCKMAXIMUM', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MAXIMO' },
+        { match: val => /categoria(.*)de(.*)impuesto/i.test(val), databaseName: 'TAXCAT', changes: val => (/(.*)IVA(.*)/i.test(val)) ? '001' : '000', col: 'CATEGORIA DE IMPUESTO' },
+        { match: val => /producto(.*)a(.*)granel/i.test(val), databaseName: 'ISSCALE', changes: val => (/(.*)SI(.*)/i.test(val)) ? 1 : 0, col: 'PRODUCTO A GRANEL' }
         /** { validator: val => true } */
       ]
     }
