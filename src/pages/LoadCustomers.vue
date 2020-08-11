@@ -2,11 +2,11 @@
   <div>
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
-        <div class="col-12">
-          <h4>CARGA MASIVA DE CLIENTES DESDE ARCHIVO EXCEL</h4>
-          <p>Para cargar una lista de clientes de forma masiva desde un archivo excel, descargue la plantilla ejemplo y llene los datos solicitados</p>
-          <p>Cargue la plantilla final seleccionando el archivo y presionando el botón cargar</p>
-          <br>
+        <div class="col-10 q-mb-md">
+          <h4 class="text-primary q-mb-sm"><q-icon name="person"/> CLIENTES - CARGA MASIVA</h4>
+          <p>Descargue la plantilla ejemplo y llene los datos solicitados. En caso de tener una plantilla con datos, cargue la plantilla aqui</p>
+        </div>
+        <div class="col-12 col-sm-11 q-gutter-sm">
           <q-chip v-if="(clientes.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
           <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
         </div>
@@ -48,7 +48,7 @@ export default {
       clientes: [],
       isSending: false,
       errors: [],
-      saveTo: `${process.env.HOMEPATH || process.env.HOME}${(process.env.HOMEPATH !== null) ? '/Desktop' : ''}/plantilla_clientes_itpv.xlsx`,
+      saveTo: 'plantilla_clientes_itpv.xlsx',
       headerConfig: [
         { match: val => /rfc/i.test(val), databaseName: 'ID', col: 'RFC' },
         { match: val => /clave(.*)busqueda/i.test(val), databaseName: 'SEARCHKEY', col: 'CLAVE DE BUSQUEDA' },
@@ -73,11 +73,17 @@ export default {
   },
   created () {
     this.$q.electron.ipcRenderer.on('response-insert-customers', this.manageResponse)
+    this.saveTo = this.getSaveDirectory('plantilla_clientes_itpv.xlsx')
   },
   destroyed () {
     this.$q.electron.ipcRenderer.removeListener('response-insert-customers', this.manageResponse)
   },
   methods: {
+    getSaveDirectory (filename) {
+      const homepath = process.env.HOMEPATH || process.env.HOME
+      if (this.$q.platform.is.linux) return `${homepath}/${filename}`
+      return `${homepath}/Desktop/${filename}`
+    },
     setProductsData (data) {
       const allInserts = cleanExcelData(data, this.headerConfig)
       allInserts.forEach(obj => { obj.TAXID = obj.ID })

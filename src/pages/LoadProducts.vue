@@ -2,10 +2,11 @@
   <div>
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
-        <div class="col-12">
-          <h4>CARGA MASIVA DE PRODUCTOS DESDE ARCHIVO EXCEL</h4>
-          <p>Para cargar una lista de productos de forma masiva desde un archivo excel, descargue la plantilla ejemplo y llene los datos solicitados.</p>
-          <p>Cargue la plantilla final seleccionando el archivo y presionando el botón cargar.</p>
+        <div class="col-10 q-mb-md">
+          <h4 class="text-primary q-mb-sm"><q-icon name="tapas"/> PRODUCTOS - CARGA MASIVA</h4>
+          <p>Descargue la plantilla ejemplo y llene los datos solicitados. En caso de tener una plantilla con datos, cargue la plantilla aqui</p>
+        </div>
+        <div class="col-12 col-sm-11 q-gutter-sm">
           <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
           <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
         </div>
@@ -47,7 +48,7 @@ export default {
       productos: [],
       isSending: false,
       errors: [],
-      saveTo: `${process.env.HOMEPATH || process.env.HOME}${(process.env.HOMEPATH !== null) ? '/Desktop' : ''}/plantilla_productos_itpv.xlsx`,
+      saveTo: 'plantilla_productos_itpv.xlsx',
       headerConfig: [ // codigo de barras: ID: [ID, CODE]
         { match: val => /sku/i.test(val), databaseName: 'REFERENCE', col: 'SKU' },
         { match: val => /c[oó]digo(.*)barras/i.test(val), databaseName: 'ID', col: 'CODIGO DE BARRAS' },
@@ -78,11 +79,17 @@ export default {
   },
   created () {
     this.$q.electron.ipcRenderer.on('response-insert-products', this.manageResponse)
+    this.saveTo = this.getSaveDirectory('plantilla_productos_itpv.xlsx')
   },
   destroyed () {
     this.$q.electron.ipcRenderer.removeListener('response-insert-products', this.manageResponse)
   },
   methods: {
+    getSaveDirectory (filename) {
+      const homepath = process.env.HOMEPATH || process.env.HOME
+      if (this.$q.platform.is.linux) return `${homepath}/${filename}`
+      return `${homepath}/Desktop/${filename}`
+    },
     setProductsData (data) {
       const allInserts = cleanExcelData(data, this.headerConfig)
       allInserts.forEach(obj => { obj.CODE = obj.ID })
