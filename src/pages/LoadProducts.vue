@@ -71,7 +71,7 @@ export default {
         { match: val => /existencias/i.test(val), databaseName: 'UNITS', changes: val => (val !== '') ? Number(val) : val, col: 'EXISTENCIAS' },
         { match: val => /stock(.*)m[ií]nimo/i.test(val), databaseName: 'STOCKSECURITY', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MINIMO' },
         { match: val => /stock(.*)m[aá]ximo/i.test(val), databaseName: 'STOCKMAXIMUM', changes: val => (val !== '') ? Number(val) : val, col: 'STOCK MAXIMO' },
-        { match: val => /categoria(.*)de(.*)impuesto/i.test(val), databaseName: 'TAXCAT', changes: val => (/(.*)IVA(.*)/i.test(val)) ? '001' : '000', col: 'CATEGORIA DE IMPUESTO' },
+        { match: val => /categor[ií]a(.*)de(.*)impuesto/i.test(val), databaseName: 'TAXCAT', default: 'IVA', changes: val => (/(.*)IVA(.*)/i.test(val)) ? '001' : '000', col: 'CATEGORIA DE IMPUESTO' },
         { match: val => /producto(.*)a(.*)granel/i.test(val), databaseName: 'ISSCALE', changes: val => (/(.*)SI(.*)/i.test(val)) ? 1 : 0, col: 'PRODUCTO A GRANEL' }
         /** { validator: val => true } */
       ]

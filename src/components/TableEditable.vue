@@ -6,17 +6,17 @@
           v-model="search"
           label="Busca por nombre, código o referencia"
           type="text" outlined rounded dense clearable color="secondary" class="q-mb-sm"
-          @keyup.enter="$q.electron.ipcRenderer.send('call-get-products', search)"
+          @keyup.enter="searchFromZero()"
         >
           <template v-slot:after>
-            <q-btn round dense flat icon="search" @click="$q.electron.ipcRenderer.send('call-get-products', search)"/>
+            <q-btn round dense flat icon="search" @click="searchFromZero()"/>
           </template>
         </q-input>
       </div>
     </div>
     <q-scroll-area
       horizontal
-      style="height: 80vh; width: 90vw;"
+      style="height: 50vh; width: 90vw;"
       class="row justify-center bg-grey-1 rounded-borders"
     >
       <q-markup-table class="table-responsive col-11" style="margin: 0 5px;">
@@ -87,9 +87,24 @@
       </q-markup-table>
       <q-page-sticky position="bottom-right" :offset="[40, 40]">
         <q-btn round dense icon="save" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
-        <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products')" color="secondary" />
+        <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products', search, currentPage - 1, itemsPerPage)" color="secondary" />
       </q-page-sticky>
     </q-scroll-area>
+    <div class="q-pa-lg flex flex-center">
+      <q-pagination
+        v-if="totalPages > 0"
+        v-model="currentPage"
+        :max="totalPages"
+        :direction-links="true"
+        :boundary-links="true"
+        icon-first="skip_previous"
+        icon-last="skip_next"
+        icon-prev="fast_rewind"
+        icon-next="fast_forward"
+      >
+      </q-pagination>
+      <q-select filled @input="changeItemsPerPage()" v-model="newItemsPerPage" :options="[3, 5, 10, 15, 25, 50, 100]" label="Filled" />
+    </div>
   </div>
 </template>
 
@@ -109,26 +124,59 @@ export default {
     return {
       rendering: [],
       blocked: [],
-      search: ''
+      search: '',
+      itemsPerPage: 5,
+      totalPages: 0,
+      currentPage: 1,
+      lastOffset: 0,
+      newItemsPerPage: 5
     }
   },
 
   created () {
-    this.$q.electron.ipcRenderer.send('call-get-products')
+    /** Listeners */
     this.$q.electron.ipcRenderer.on('response-get-products', this.list_products)
+    this.$q.electron.ipcRenderer.on('response-get-products-paginator', this.setTotalPages)
     this.$q.electron.ipcRenderer.on('response-update-product', this.onUpdatedProduct)
     this.$q.electron.ipcRenderer.on('response-update-stock', this.onUpdatedStockCurrent)
     this.$q.electron.ipcRenderer.on('response-update-stocklevel', this.onUpdatedStockLevel)
+
+    /** Initialize page */
+    this.$q.electron.ipcRenderer.send('call-get-products', undefined, this.currentPage - 1, this.itemsPerPage)
+    this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage)
   },
 
   beforeDestroy () {
     this.$q.electron.ipcRenderer.removeListener('response-get-products', this.list_products)
+    this.$q.electron.ipcRenderer.removeListener('response-get-products-paginator', this.setTotalPages)
     this.$q.electron.ipcRenderer.removeListener('response-update-product', this.onUpdatedProduct)
     this.$q.electron.ipcRenderer.removeListener('response-update-stock', this.onUpdatedStockCurrent)
     this.$q.electron.ipcRenderer.removeListener('response-update-stocklevel', this.onUpdatedStockLevel)
   },
 
   methods: {
+    setTotalPages (e, res) {
+      this.totalPages = res.totalPages
+    },
+
+    changeItemsPerPage () {
+      const currentPage = this.currentPage - 1
+      const lastOffset = currentPage * this.itemsPerPage
+      this.itemsPerPage = this.newItemsPerPage
+      this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage)
+      const newPage = Math.floor(lastOffset / this.newItemsPerPage) + 1
+      if (newPage === this.currentPage) {
+        this.$q.electron.ipcRenderer.send('call-get-products', this.search, currentPage, this.newItemsPerPage)
+        return
+      }
+      this.currentPage = newPage
+    },
+
+    searchFromZero () {
+      this.currentPage = 1
+      this.$q.electron.ipcRenderer.send('call-get-products', this.search, this.currentPage - 1, this.itemsPerPage)
+    },
+
     cleanData (data, columns) {
       const cleanedData = data.map(el => {
         const selected = []
@@ -282,6 +330,15 @@ export default {
         icon: icon,
         message: msg
       })
+    }
+  },
+
+  watch: {
+    currentPage: function (newPage) {
+      const actualPage = newPage - 1
+      const start = actualPage * this.itemsPerPage
+      const increment = this.itemsPerPage
+      this.$q.electron.ipcRenderer.send('call-get-products', this.search, start, increment)
     }
   }
 }

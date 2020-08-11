@@ -7,28 +7,44 @@ const Hex = require('crypto-js/enc-hex')
 
 let conn = null
 
+const productsQuery = `
+  SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
+    FROM
+        products p
+      LEFT JOIN
+        (
+          SELECT PRODUCT, UNITS FROM stockcurrent WHERE LOCATION = 0
+        ) sc ON p.ID = sc.PRODUCT
+      LEFT JOIN
+        (
+          SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
+        ) sl ON p.ID = sl.PRODUCT
+      LEFT JOIN categories c ON c.ID = p.CATEGORY
+    WHERE
+      p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.REFERENCE REGEXP ?
+    ORDER BY CATEGORIA, NAME
+`
 
-const getProducts = async (search = '.*') => {
+const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
   if (conn === null)
     conn = await getConnection()
   try {
-    const result = await conn.query(`
-      SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
-        FROM
-            products p
-          LEFT JOIN
-            (
-              SELECT PRODUCT, UNITS FROM stockcurrent WHERE LOCATION = 0
-            ) sc ON p.ID = sc.PRODUCT
-          LEFT JOIN
-            (
-              SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
-            ) sl ON p.ID = sl.PRODUCT
-          LEFT JOIN categories c ON c.ID = p.CATEGORY
-        WHERE
-          p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.REFERENCE REGEXP ?
-        ORDER BY CATEGORIA, NAME
-    `, [search, search, search])
+    const countQuery = `
+      SELECT CEILING(COUNT(*) / ?) AS totalPages FROM (${productsQuery}) i
+    `
+    const result = await conn.query(countQuery, [itemsPerPage, search, search, search])
+    return result[0]
+  } catch (error) {
+    return []
+  }
+}
+
+const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
+  if (conn === null)
+    conn = await getConnection()
+  try {
+    const limit = `LIMIT ${offset}, ${itemsPerPage}`
+    const result = await conn.query(`${productsQuery} ${limit}`, [search, search, search])
     return result
   } catch (error) {
     return []
@@ -182,6 +198,6 @@ const updateStockLevel = async (productId, min, max) => {
 }
 
 module.exports = {
-  getProducts, insertProduct, checkAdminUser, insertTicket, updateProduct,
+  getProducts, getTotalPages, insertProduct, checkAdminUser, insertTicket, updateProduct,
   updateStockCurrent, updateStockLevel, insertProducts, insertCustomers
 }

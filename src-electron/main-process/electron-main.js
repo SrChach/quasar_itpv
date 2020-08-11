@@ -1,6 +1,6 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
 import {
-  getProducts, checkAdminUser, insertTicket, updateProduct,
+  getProducts, getTotalPages, checkAdminUser, insertTicket, updateProduct,
   updateStockCurrent, updateStockLevel, insertProducts, insertCustomers
 } from '../queries.js'
 
@@ -61,9 +61,15 @@ app.on('activate', () => {
 })
 
 /** Code for managing SQL requests and responses */
-ipcMain.on('call-get-products', async (event, search) => {
+ipcMain.on('call-get-products-paginator', async (event, itemsPerPage = 5, search) => {
   search = (!search) ? undefined : search
-  const result = await getProducts(search)
+  const result = await getTotalPages(itemsPerPage, search)
+  event.reply('response-get-products-paginator', result)
+})
+
+ipcMain.on('call-get-products', async (event, search, offset = 0, itemsPerPage = 5) => {
+  search = (!search) ? undefined : search
+  const result = await getProducts(search, offset, itemsPerPage)
   event.reply('response-get-products', result)
 })
 
