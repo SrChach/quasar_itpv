@@ -7,24 +7,6 @@ const Hex = require('crypto-js/enc-hex')
 
 let conn = null
 
-const productsQuery = `
-  SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
-    FROM
-        products p
-      LEFT JOIN
-        (
-          SELECT PRODUCT, UNITS FROM stockcurrent WHERE LOCATION = 0
-        ) sc ON p.ID = sc.PRODUCT
-      LEFT JOIN
-        (
-          SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
-        ) sl ON p.ID = sl.PRODUCT
-      LEFT JOIN categories c ON c.ID = p.CATEGORY
-    WHERE
-      p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.REFERENCE REGEXP ?
-    ORDER BY CATEGORIA, NAME
-`
-
 const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
   if (conn === null)
     conn = await getConnection()
@@ -47,7 +29,27 @@ const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
     conn = await getConnection()
   try {
     const limit = `LIMIT ${offset}, ${itemsPerPage}`
-    const result = await conn.query(`${productsQuery} ${limit}`, [search, search, search])
+    const productsQuery = `
+      SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
+        FROM
+            (
+              SELECT * FROM products
+                WHERE
+                  NAME REGEXP ? OR CODE REGEXP ? OR REFERENCE REGEXP ?
+                ${limit}
+            ) p
+          LEFT JOIN
+            (
+              SELECT PRODUCT, UNITS FROM stockcurrent WHERE LOCATION = 0
+            ) sc ON p.ID = sc.PRODUCT
+          LEFT JOIN
+            (
+              SELECT PRODUCT, STOCKSECURITY, STOCKMAXIMUM FROM stocklevel WHERE LOCATION = 0
+            ) sl ON p.ID = sl.PRODUCT
+          LEFT JOIN categories c ON c.ID = p.CATEGORY
+        ORDER BY CATEGORIA, NAME
+    `
+    const result = await conn.query(productsQuery, [search, search, search])
     return result
   } catch (error) {
     return []
