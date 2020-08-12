@@ -1,11 +1,11 @@
 <template>
   <div class="row justify-center items-center">
     <div class="col-12 col-sm-12 q-pa-md q-gutter-sm text-center">
-      <q-banner rounded class="bg-info text-white">
-        <p>De click en el siguiente botón para generar  una plantilla de los productos que no pudieron cargarse</p>
+      <q-banner rounded class="bg-blue-grey-6 text-white">
+        <p>De click en el siguiente botón para generar una plantilla con los productos que no pudieron cargarse</p>
         <p><b>Corrija los errores para cargar estos datos nuevamente.</b></p>
         <hr>
-        <q-btn color="warning" label="Generar plantilla con datos a corregir" icon="save" @click="saveErrorsFile()"/>
+        <q-btn color="orange-13" label="Generar plantilla con datos a corregir" icon="save" @click="saveErrorsFile()"/>
       </q-banner>
     </div>
     <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
@@ -40,7 +40,7 @@
         />
       </div>
       <q-page-sticky position="bottom-right" :offset="[18, 18]">
-        <q-btn fab icon="arrow_back" color="warning" label="Volver" @click="$emit('close')"/>
+        <q-btn fab icon="arrow_back" color="orange-13" label="Volver" @click="$emit('close')"/>
       </q-page-sticky>
     </div>
   </div>

@@ -4,7 +4,7 @@
       <div class="row justify-center items-center">
         <div class="col-10 q-mb-md">
           <h4 class="text-primary q-mb-sm"><q-icon name="tapas"/> PRODUCTOS - CARGA MASIVA</h4>
-          <p>Descargue la plantilla ejemplo y llene los datos solicitados. En caso de tener una plantilla con datos, cargue la plantilla aqui</p>
+          <p>Descargue la plantilla ejemplo y llene los datos solicitados.</p>
         </div>
         <div class="col-12 col-sm-11 q-gutter-sm">
           <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />

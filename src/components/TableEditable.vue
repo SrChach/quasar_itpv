@@ -95,6 +95,8 @@
         v-if="totalPages > 0"
         v-model="currentPage"
         :max="totalPages"
+        :max-pages="6"
+        :boundary-numbers="true"
         :direction-links="true"
         :boundary-links="true"
         icon-first="skip_previous"
@@ -103,7 +105,13 @@
         icon-next="fast_forward"
       >
       </q-pagination>
-      <q-select filled @input="changeItemsPerPage()" v-model="newItemsPerPage" :options="[3, 5, 10, 15, 25, 50, 100]" label="Filled" />
+      <q-select
+        label="Registros por página"
+        filled
+        @input="changeItemsPerPage()"
+        v-model="newItemsPerPage"
+        :options="[3, 5, 10, 15, 20, 25, 50, 100]"
+      />
     </div>
   </div>
 </template>
@@ -125,11 +133,11 @@ export default {
       rendering: [],
       blocked: [],
       search: '',
-      itemsPerPage: 5,
+      itemsPerPage: 20,
       totalPages: 0,
       currentPage: 1,
       lastOffset: 0,
-      newItemsPerPage: 5
+      newItemsPerPage: 20
     }
   },
 
@@ -163,7 +171,7 @@ export default {
       const currentPage = this.currentPage - 1
       const lastOffset = currentPage * this.itemsPerPage
       this.itemsPerPage = this.newItemsPerPage
-      this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage)
+      this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage, this.search)
       const newPage = Math.floor(lastOffset / this.newItemsPerPage) + 1
       if (newPage === this.currentPage) {
         this.$q.electron.ipcRenderer.send('call-get-products', this.search, currentPage, this.newItemsPerPage)
@@ -175,6 +183,7 @@ export default {
     searchFromZero () {
       this.currentPage = 1
       this.$q.electron.ipcRenderer.send('call-get-products', this.search, this.currentPage - 1, this.itemsPerPage)
+      this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage, this.search)
     },
 
     cleanData (data, columns) {
