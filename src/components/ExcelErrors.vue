@@ -19,7 +19,7 @@
         <q-list bordered separator>
           <q-item v-ripple v-for="(error, i) in errors" :key="i">
             <q-item-section>
-              <q-item-label overline>Error en la fila: {{ error.arrayId + 2 }}</q-item-label>
+              <q-item-label overline><span class="text-h6">Error en la fila {{ error.arrayId + 2 }}: </span></q-item-label>
               <q-item-label>{{ error.error }}</q-item-label>
             </q-item-section>
           </q-item>
