@@ -87,7 +87,7 @@
       </q-markup-table>
       <q-page-sticky position="bottom-right" :offset="[40, 40]">
         <q-btn round dense icon="save" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
-        <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products', search, currentPage - 1, itemsPerPage)" color="secondary" />
+        <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products', search, (currentPage - 1) * itemsPerPage, itemsPerPage)" color="secondary" />
       </q-page-sticky>
     </q-scroll-area>
     <div class="q-pa-lg flex flex-center">
@@ -174,7 +174,7 @@ export default {
       this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage, this.search)
       const newPage = Math.floor(lastOffset / this.newItemsPerPage) + 1
       if (newPage === this.currentPage) {
-        this.$q.electron.ipcRenderer.send('call-get-products', this.search, currentPage, this.newItemsPerPage)
+        this.$q.electron.ipcRenderer.send('call-get-products', this.search, currentPage * this.itemsPerPage, this.newItemsPerPage)
         return
       }
       this.currentPage = newPage
