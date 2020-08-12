@@ -30,7 +30,10 @@ const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
     conn = await getConnection()
   try {
     const countQuery = `
-      SELECT CEILING(COUNT(*) / ?) AS totalPages FROM (${productsQuery}) i
+      SELECT CEILING(COUNT(*) / ?) AS totalPages
+        FROM products p
+        WHERE
+          p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.REFERENCE REGEXP ?
     `
     const result = await conn.query(countQuery, [itemsPerPage, search, search, search])
     return result[0]
