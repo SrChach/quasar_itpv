@@ -19,7 +19,7 @@
       style="height: 50vh; width: 90vw;"
       class="row justify-center bg-grey-1 rounded-borders"
     >
-      <q-markup-table class="table-responsive col-11" style="margin: 0 5px;">
+      <q-markup-table class="col-11" style="margin: 0 5px;">
         <thead>
           <tr>
             <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">{{ header.name }}</th>

@@ -4,14 +4,17 @@
       <div class="row justify-center items-center">
         <div class="col-10 q-mb-md">
           <h4 class="text-primary q-mb-sm"><q-icon name="person"/> CLIENTES - CARGA MASIVA</h4>
-          <p>Descargue la plantilla ejemplo y llene los datos solicitados.</p>
-        </div>
-        <div class="col-12 col-sm-11 q-gutter-sm">
-          <q-chip v-if="(clientes.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
-          <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
+          <p>
+            Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
+            <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
+          </p>
         </div>
         <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
-          <componente-de-excel v-show="!isSending" @change-excel="setProductsData"/>
+          <div v-show="!isSending">
+            <q-chip v-if="(clientes.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
+            <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
+            <componente-de-excel @change-excel="setProductsData"/>
+          </div>
           <q-spinner-hourglass size="md" v-show="isSending" color="secondary"/>
         </div>
         <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
@@ -36,6 +39,7 @@
 <script>
 /** Utils */
 import { cleanExcelData } from '../utils/process-array-excel.js'
+import fs from 'fs'
 
 /** Components */
 import load from '../components/ExcelComponent'
@@ -48,7 +52,7 @@ export default {
       clientes: [],
       isSending: false,
       errors: [],
-      saveTo: 'plantilla_clientes_itpv.xlsx',
+      saveTo: 'corregir_clientes_itpv.xlsx',
       headerConfig: [
         { match: val => /rfc/i.test(val), databaseName: 'ID', col: 'RFC' },
         { match: val => /clave(.*)busqueda/i.test(val), databaseName: 'SEARCHKEY', col: 'CLAVE DE BUSQUEDA' },
@@ -73,12 +77,24 @@ export default {
   },
   created () {
     this.$q.electron.ipcRenderer.on('response-insert-customers', this.manageResponse)
-    this.saveTo = this.getSaveDirectory('plantilla_clientes_itpv.xlsx')
+    this.saveTo = this.getSaveDirectory('corregir_clientes_itpv.xlsx')
   },
   destroyed () {
     this.$q.electron.ipcRenderer.removeListener('response-insert-customers', this.manageResponse)
   },
   methods: {
+    copyTemplate () {
+      const bookRoute = __statics + '/excel/template-clientes.xlsx'
+      const copyTo = this.getSaveDirectory('template-original-clientes.xlsx')
+
+      fs.copyFile(bookRoute, copyTo, (err) => {
+        if (err) {
+          this.$q.notify({ type: 'negative', message: `oops! No se pudo guardar. Error: ${err}` })
+          return
+        }
+        this.$q.notify({ type: 'positive', message: `Plantilla guardada en ${copyTo}` })
+      })
+    },
     getSaveDirectory (filename) {
       const homepath = process.env.HOMEPATH || process.env.HOME
       if (this.$q.platform.is.linux) return `${homepath}/${filename}`
