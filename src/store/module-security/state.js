@@ -1,6 +1,7 @@
 export default function () {
   return {
     isAuthenticated: false,
-    shaCode: null
+    shaCode: null,
+    serialCode: null
   }
 }
