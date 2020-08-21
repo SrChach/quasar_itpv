@@ -8,9 +8,9 @@ const Hex = require('crypto-js/enc-hex')
 let conn = null
 
 const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
-  if (conn === null)
-    conn = await getConnection()
   try {
+    if (conn === null)
+      conn = await getConnection()
     const countQuery = `
       SELECT CEILING(COUNT(*) / ?) AS totalPages
         FROM products p
@@ -25,9 +25,9 @@ const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
 }
 
 const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
-  if (conn === null)
-    conn = await getConnection()
   try {
+    if (conn === null)
+      conn = await getConnection()
     const limit = `LIMIT ${offset}, ${itemsPerPage}`
     const productsQuery = `
       SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
@@ -57,16 +57,21 @@ const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
 }
 
 const checkAdminUser = async (pass = '') => {
-  if (conn === null)
-    conn = await getConnection()
+  try {
+    if (conn === null)
+      conn = await getConnection()
     const encryped = SHA1(pass).toString(Hex).toUpperCase()
     const res = await conn.query(`SELECT APPPASSWORD FROM people WHERE ID = 0 AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )`)
 
     if (res.length == 1) {
       let pass = res[0].APPPASSWORD
-      return (pass === null) ? SHA1('temporal').toString(Hex).toUpperCase() : pass.replace('sha1:', '')
+      pass = (pass === null) ? SHA1(pass).toString(Hex).toUpperCase() : pass.replace('sha1:', '')
+      return { data: pass, error: null }
     }
-    return null
+    return { error: 'Password incorrecto. Checalo en la aplicación de ITPV' }
+  } catch (error) {
+    return { error: `Error. Cheque que ITPV esté corriendo y reinicie esta aplicacion. Codigo: ${error.errno}` }
+  }
 }
 
 const insertProduct = async (product, fromExcel = false, arrayId) => {
@@ -76,9 +81,9 @@ const insertProduct = async (product, fromExcel = false, arrayId) => {
     product.PRECIO_DLL = 0,
     product.DISCOUNT = 0
   }
-  if (conn === null)
-    conn = await getConnection()
   try {
+    if (conn === null)
+      conn = await getConnection()
     const result = await conn.query('INSERT INTO products SET ?', product)
     return { affectedRows: result.affectedRows, other: result }
   } catch (error) {
@@ -123,9 +128,9 @@ const insertProducts = async (products = [], fromExcel = false) => {
 }
 
 const insertCustomer = async (customer, fromExcel = false, arrayId) => {
-  if (conn === null)
-    conn = await getConnection()
   try {
+    if (conn === null)
+      conn = await getConnection()
     const result = await conn.query('INSERT INTO customers SET ?', customer)
     return { affectedRows: result.affectedRows, other: result }
   } catch (error) {
@@ -148,9 +153,9 @@ const insertCustomers = async (customers = [], fromExcel = false) => {
 }
 
 const updateProduct = async (product, idObject) => {
-  if (conn === null)
-    conn = await getConnection()
   try {
+    if (conn === null)
+      conn = await getConnection()
     const result = await conn.query(`UPDATE products SET ? WHERE ?`, [product, idObject])
     return result
   } catch (error) {

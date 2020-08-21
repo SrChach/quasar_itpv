@@ -40,7 +40,12 @@ export default {
     this.$q.electron.ipcRenderer.removeListener('response-check-admin', this.get_auth_user)
   },
   methods: {
-    get_auth_user (event, encrypted) {
+    get_auth_user (event, response) {
+      if (response.error !== null && response.error !== undefined) {
+        this.$q.notify({ type: 'negative', message: response.error })
+        return 0
+      }
+      const encrypted = response.data
       const options = {
         color: 'red-4',
         textColor: 'white',

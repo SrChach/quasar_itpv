@@ -8,7 +8,7 @@
           icon="login"
           to="/unauthenticated"
           replace
-          label="Login"
+          label="Logo irá Aqui"
         />
       </q-tabs>
     </q-footer>

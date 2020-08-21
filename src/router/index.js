@@ -31,17 +31,20 @@ export default function ({ store /* ,ssrContext */ }) {
       if (!store.getters['security/getIsActivated']) {
         next('/unactivated')
       } else {
-        next()
-      }
-    } else if (to.matched.some(record => record.meta.requiresAuth)) {
-      // Si no está autenticado, manda a una ruta
-      if (!store.getters['security/getIsAuthenticated']) {
-        next('/unauthenticated')
-      } else {
-        next() // Si lo está, lo deja pasar
+        if (to.matched.some(record => record.meta.requiresAuth)) {
+          // Si no está autenticado, manda a una ruta
+          if (!store.getters['security/getIsAuthenticated']) {
+            console.log('entra')
+            next('/unauthenticated')
+          } else {
+            next() // Si lo está, lo deja pasar
+          }
+        } else {
+          next() // Si no requiere autenticación, asegúrate de siempre llamar a next()!
+        }
       }
     } else {
-      next() // Si no requiere autenticación, asegúrate de siempre llamar a next()!
+      next()
     }
   })
 
