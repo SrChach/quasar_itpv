@@ -8,6 +8,17 @@ export function setIsAuthenticated (state, payload) {
   }
 }
 
+export function setIsActivated (state, payload) {
+  const decryptedPayload = atob(payload)
+  const isValid = /[a-z]{4}-[a-z]{4}-[a-z]{4}/i.test(decryptedPayload)
+  state.isActivated = isValid
+
+  if (isValid) {
+    localStorage.setItem('serial-code', payload)
+    state.serialCode = payload
+  }
+}
+
 export function logout (state) {
   localStorage.removeItem('sha-code')
   state.shaCode = null

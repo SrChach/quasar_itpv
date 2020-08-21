@@ -27,7 +27,13 @@ export default function ({ store /* ,ssrContext */ }) {
   })
 
   Router.beforeEach((to, from, next) => {
-    if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (to.matched.some(record => record.meta.requiresActivation)) {
+      if (!store.getters['security/getIsActivated']) {
+        next('/unactivated')
+      } else {
+        next()
+      }
+    } else if (to.matched.some(record => record.meta.requiresAuth)) {
       // Si no está autenticado, manda a una ruta
       if (!store.getters['security/getIsAuthenticated']) {
         next('/unauthenticated')
