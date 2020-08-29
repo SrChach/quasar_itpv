@@ -93,6 +93,11 @@ export default {
       const bookRoute = __statics + '/excel/template-productos.xlsx'
       const copyTo = this.getSaveDirectory('template-original-productos.xlsx')
 
+      if (fs.existsSync(copyTo)) {
+        this.$q.notify({ type: 'negative', message: `Ya existe un archivo en ${copyTo}. Cambie o mueva ese archivo para poder descargar la plantilla` })
+        return
+      }
+
       fs.copyFile(bookRoute, copyTo, (err) => {
         if (err) {
           this.$q.notify({ type: 'negative', message: `oops! No se pudo guardar. Error: ${err}` })

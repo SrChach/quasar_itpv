@@ -2,7 +2,10 @@
   <q-page class="flex flex-center justify-center">
     <div class="q-pa-md">
       <h2>Iniciar sesión</h2>
-      <span><b>Nota:</b> Solo para uso del administrador</span>
+      <span>
+        <b>Nota:</b> Solo para uso del administrador.<br>
+        Ingresa la misma contraseña de tu <b>ITPV</b>
+      </span>
       <q-form
         @submit="check_credentials"
         @reset="onReset"

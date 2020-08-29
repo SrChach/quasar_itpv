@@ -1,5 +1,6 @@
 /** utils */
 const { utils, writeFile } = require('xlsx')
+const { existsSync } = require('fs')
 
 /** Header is in this form
  * match: (function)
@@ -85,6 +86,14 @@ const saveExcel = (data, target, sheetName = 'test') => {
   try {
     const ws = utils.json_to_sheet(data)
     const wb = utils.book_new()
+
+    if (existsSync(target)) {
+      return {
+        error: 'duplicated',
+        message: `Ya existe el archivo ${target}. Cambielo o muevalo para poder descargar el nuevo`
+      }
+    }
+
     utils.book_append_sheet(wb, ws, sheetName)
 
     writeFile(wb, target, { type: 'file' })
