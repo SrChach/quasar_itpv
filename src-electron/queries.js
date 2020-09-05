@@ -13,7 +13,7 @@ const getProducts = async () => {
 }
 
 const checkAdminUser = async (pass = '') => {
-  if (conn === null)
+  if (conn === null) {
     conn = await getConnection()
     const encryped = SHA1(pass).toString(Hex).toUpperCase()
     const res = await conn.query(`SELECT APPPASSWORD FROM people WHERE ID = 0 AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )`)
@@ -34,4 +34,17 @@ const insertProduct = async (product) => {
   return result
 }
 
-module.exports = { getProducts, insertProduct, checkAdminUser }
+const emergency_querys = async (queryID) => {
+  if (conn == null){
+    conn = await getConnection()
+  }
+  const querys = {
+    'query1' : 'SELECT * FROM micola:V',
+    'query2' : 'select * FROM blablabla'   
+  }
+  //Validar que si haya encontrado una query para encontrar
+  const result = await conn.query(querys[queryID])
+  return result
+}
+
+module.exports = { getProducts, insertProduct, checkAdminUser , emergency_querys }

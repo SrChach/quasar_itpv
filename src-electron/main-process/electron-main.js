@@ -1,5 +1,5 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
-import { getProducts, insertProduct, checkAdminUser } from '../queries.js'
+import { getProducts, insertProduct, checkAdminUser, emergency_querys } from '../queries.js'
 
 try {
   if (process.platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -71,4 +71,11 @@ ipcMain.on('call-insert-products', async (event, product) => {
 ipcMain.on('call-check-admin', async (event, password) => {
   const result = await checkAdminUser(password)
   event.reply('response-check-admin', result)
+})
+
+ipcMain.on('emergencyscripts_Trigger', async (event, queryID) => {
+  const result = await emergency_querys(queryID)
+  event.reply('emergency_Scripts', result)
+  // tareas: terminar botones, poner las querys chidas , manejar error de queryKEY
+
 })
