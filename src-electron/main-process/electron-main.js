@@ -1,7 +1,8 @@
 import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
 import {
   getProducts, getTotalPages, checkAdminUser, insertTicket, updateProduct,
-  updateStockCurrent, updateStockLevel, insertProducts, insertCustomers
+  updateStockCurrent, updateStockLevel, insertProducts, insertCustomers, deleteAdmin, showID, deleteWINLogo,
+  deleteVentas, deleteStock, deleteImages, addAdmin
 } from '../queries.js'
 
 try {
@@ -123,4 +124,39 @@ ipcMain.on('call-check-admin', async (event, password) => {
 ipcMain.on('llamar-insertar-ticket', async (event, datos, resourceId) => {
   const result = await insertTicket(datos, resourceId)
   event.reply('responder-insertar-ticket', result, resourceId)
+})
+
+ipcMain.on('llamar-delete-admin', async (event) => {
+  const result = await deleteAdmin()
+  event.reply('responder-delete-admin', result)
+})
+
+ipcMain.on('llamar-show-ID', async (event) => {
+  const result = await showID()
+  event.reply('responder-show-id', result)
+})
+
+ipcMain.on('llamar-delete-Logo', async (event) => {
+  const result = await deleteWINLogo()
+  event.reply('responder-delete-Logo', result)
+})
+
+ipcMain.on('llamar-delete-Ventas', async (event) => {
+  const result = await deleteVentas()
+  event.reply('responder-delete-Ventas', result)
+})
+
+ipcMain.on('llamar-delete-Stock', async (event) => {
+  const result = await deleteStock()
+  event.reply('responder-delete-Stock', result)
+})
+
+ipcMain.on('llamar-delete-Images', async (event) => {
+  const result = await deleteImages()
+  event.reply('responder-delete-Images', result)
+})
+
+ipcMain.on('llamar-add-Admin', async (event) => {
+  const result = await addAdmin()
+  event.reply('responder-add-Admin', result)
 })

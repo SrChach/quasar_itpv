@@ -9,8 +9,7 @@ let conn = null
 
 const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
   try {
-    if (conn === null)
-      conn = await getConnection()
+    if (conn === null) { conn = await getConnection() }
     const countQuery = `
       SELECT CEILING(COUNT(*) / ?) AS totalPages
         FROM products p
@@ -26,8 +25,7 @@ const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
 
 const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
   try {
-    if (conn === null)
-      conn = await getConnection()
+    if (conn === null) { conn = await getConnection() }
     const limit = `LIMIT ${offset}, ${itemsPerPage}`
     const productsQuery = `
       SELECT p.*, sc.UNITS, sl.STOCKSECURITY, sl.STOCKMAXIMUM, c.NAME as CATEGORIA
@@ -58,11 +56,11 @@ const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
 
 const checkAdminUser = async (pass = '') => {
   try {
-    if (conn === null)
-      conn = await getConnection()
+    if (conn === null) { conn = await getConnection() }
     const encryped = SHA1(pass).toString(Hex).toUpperCase()
     const res = await conn.query(`SELECT APPPASSWORD FROM people WHERE ID = 0 AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )`)
 
+    // eslint-disable-next-line eqeqeq
     if (res.length == 1) {
       let pass = res[0].APPPASSWORD
       pass = (pass === null) ? SHA1(pass).toString(Hex).toUpperCase() : pass.replace('sha1:', '')
@@ -76,18 +74,18 @@ const checkAdminUser = async (pass = '') => {
 
 const insertProduct = async (product, fromExcel = false, arrayId) => {
   if (fromExcel === true) {
+    // eslint-disable-next-line no-sequences,no-unused-expressions
     product.CATEGORY = '000',
     product.ISCOM = 0,
     product.PRECIO_DLL = 0,
     product.DISCOUNT = 0
   }
   try {
-    if (conn === null)
-      conn = await getConnection()
+    if (conn === null) { conn = await getConnection() }
     const result = await conn.query('INSERT INTO products SET ?', product)
     return { affectedRows: result.affectedRows, other: result }
   } catch (error) {
-    let obj = { error: error.sqlMessage, affectedRows: 0 }
+    const obj = { error: error.sqlMessage, affectedRows: 0 }
     if (fromExcel === true && arrayId !== undefined) obj.arrayId = arrayId
     return obj
   }
@@ -95,7 +93,7 @@ const insertProduct = async (product, fromExcel = false, arrayId) => {
 
 // Solo retornará los elementos que fallaron
 const insertProducts = async (products = [], fromExcel = false) => {
-  let results = []
+  const results = []
   for (let i = 0; i < products.length; i++) {
     const productId = products[i].ID
 
@@ -129,19 +127,18 @@ const insertProducts = async (products = [], fromExcel = false) => {
 
 const insertCustomer = async (customer, fromExcel = false, arrayId) => {
   try {
-    if (conn === null)
-      conn = await getConnection()
+    if (conn === null) { conn = await getConnection() }
     const result = await conn.query('INSERT INTO customers SET ?', customer)
     return { affectedRows: result.affectedRows, other: result }
   } catch (error) {
-    let obj = { error: error.sqlMessage, affectedRows: 0 }
+    const obj = { error: error.sqlMessage, affectedRows: 0 }
     if (fromExcel === true && arrayId !== undefined) obj.arrayId = arrayId
     return obj
   }
 }
 
 const insertCustomers = async (customers = [], fromExcel = false) => {
-  let results = []
+  const results = []
   for (let i = 0; i < customers.length; i++) {
     const singleRes = await insertCustomer(customers[i], fromExcel, i)
     if (singleRes.affectedRows < 1) {
@@ -154,9 +151,88 @@ const insertCustomers = async (customers = [], fromExcel = false) => {
 
 const updateProduct = async (product, idObject) => {
   try {
-    if (conn === null)
-      conn = await getConnection()
-    const result = await conn.query(`UPDATE products SET ? WHERE ?`, [product, idObject])
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query('UPDATE products SET ? WHERE ?', [product, idObject])
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+// FER
+const deleteAdmin = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query(`UPDATE \`people\` SET \`APPPASSWORD\`=null WHERE (\`ID\`='0');
+                                    UPDATE \`people\` SET \`VISIBLE\`='1' WHERE (\`ID\`='0');
+                                    UPDATE \`people\` SET \`ROLE\`='0' WHERE (\`ID\`='0');`)
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const showID = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query('select NAME, ID from people')
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const deleteWINLogo = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query('UPDATE `resources` SET `CONTENT`=null WHERE (`NAME`=\'Window.Logo\')')
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const deleteVentas = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query(`DELETE from \`stockcurrent\`;
+                                    DELETE from ticketlines;
+                                    DELETE from taxlines;
+                                    DELETE FROM tickets;
+                                    UPDATE ticketsnum SET ID= 2;
+                                    DELETE FROM payments;
+                                    DELETE FROM receipts;
+                                    DELETE FROM closedcash;
+                                    DELETE FROM stockdiary;`)
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const deleteStock = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query('DELETE from `stockcurrent`;')
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const deleteImages = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query('UPDATE `products` SET `IMAGE`=null;')
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const addAdmin = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    const result = await conn.query('INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES (\'0\', \'Administrator\', NULL, \'0\', TRUE, NULL);')
     return result
   } catch (error) {
     return { error: error.sqlMessage, affectedRows: 0 }
@@ -164,8 +240,7 @@ const updateProduct = async (product, idObject) => {
 }
 
 const insertTicket = async (datos, resourceId) => {
-  if (conn === null)
-    conn = await getConnection()
+  if (conn === null) { conn = await getConnection() }
   const result = await conn.query('UPDATE resources SET resources.CONTENT=' + datos + ' WHERE resources.ID="' + resourceId + '"')
   return result
 }
@@ -175,10 +250,7 @@ const updateStockCurrent = async (productId, units) => {
   const check = await conn.query('SELECT * FROM stockcurrent WHERE PRODUCT = ? AND LOCATION = 0', [productId])
   try {
     let result = null
-    if (check.length > 0)
-      result = await conn.query('UPDATE stockcurrent SET UNITS = ? WHERE PRODUCT = ? AND LOCATION = 0', [units, productId])
-    else
-      result = await conn.query('INSERT INTO stockcurrent SET ?', { LOCATION: 0, PRODUCT: productId, UNITS: units })
+    if (check.length > 0) { result = await conn.query('UPDATE stockcurrent SET UNITS = ? WHERE PRODUCT = ? AND LOCATION = 0', [units, productId]) } else { result = await conn.query('INSERT INTO stockcurrent SET ?', { LOCATION: 0, PRODUCT: productId, UNITS: units }) }
 
     return result
   } catch (error) {
@@ -196,10 +268,7 @@ const updateStockLevel = async (productId, min, max) => {
   const { num, insertId } = check[0]
   try {
     let result = null
-    if (num > 0)
-      result = await conn.query('UPDATE stocklevel SET STOCKSECURITY = ?, STOCKMAXIMUM = ? WHERE PRODUCT = ? AND LOCATION = 0', [min, max, productId])
-    else
-      result = await conn.query('INSERT INTO stocklevel SET ?', { ID: insertId, LOCATION: 0, PRODUCT: productId, STOCKSECURITY: min, STOCKMAXIMUM: max })
+    if (num > 0) { result = await conn.query('UPDATE stocklevel SET STOCKSECURITY = ?, STOCKMAXIMUM = ? WHERE PRODUCT = ? AND LOCATION = 0', [min, max, productId]) } else { result = await conn.query('INSERT INTO stocklevel SET ?', { ID: insertId, LOCATION: 0, PRODUCT: productId, STOCKSECURITY: min, STOCKMAXIMUM: max }) }
 
     return result
   } catch (error) {
@@ -208,6 +277,21 @@ const updateStockLevel = async (productId, min, max) => {
 }
 
 module.exports = {
-  getProducts, getTotalPages, insertProduct, checkAdminUser, insertTicket, updateProduct,
-  updateStockCurrent, updateStockLevel, insertProducts, insertCustomers
+  getProducts,
+  getTotalPages,
+  insertProduct,
+  checkAdminUser,
+  insertTicket,
+  updateProduct,
+  updateStockCurrent,
+  updateStockLevel,
+  insertProducts,
+  insertCustomers,
+  deleteAdmin,
+  showID,
+  deleteWINLogo,
+  deleteVentas,
+  deleteStock,
+  deleteImages,
+  addAdmin
 }
