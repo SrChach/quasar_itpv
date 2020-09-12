@@ -2,7 +2,7 @@
   "name": "q_azar",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
-  "productName": "q_azar",
+  "productName": "ITPV Tools",
   "author": "srchach <gsikmo@gmail.com>",
   "private": true,
   "scripts": {

@@ -111,8 +111,8 @@ module.exports = function (/* ctx */) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'q_azar',
-        short_name: 'q_azar',
+        name: 'ITPV Tools',
+        short_name: 'ITPV',
         description: 'A Quasar Framework app',
         display: 'standalone',
         orientation: 'portrait',
@@ -178,7 +178,7 @@ module.exports = function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'q_azar'
+        appId: 'ITPV tools'
       },
 
       // More info: https://quasar.dev/quasar-cli/developing-electron-apps/node-integration

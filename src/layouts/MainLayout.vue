@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          ITPV App
+          ITPV Tools
         </q-toolbar-title>
 
         <q-btn
