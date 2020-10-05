@@ -34,7 +34,6 @@ export default function ({ store /* ,ssrContext */ }) {
         if (to.matched.some(record => record.meta.requiresAuth)) {
           // Si no está autenticado, manda a una ruta
           if (!store.getters['security/getIsAuthenticated']) {
-            console.log('entra')
             next('/unauthenticated')
           } else {
             next() // Si lo está, lo deja pasar

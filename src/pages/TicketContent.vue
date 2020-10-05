@@ -2,20 +2,20 @@
 <center>
   <q-page padding class="q-pa-md q-gutter-sm">
     <h4 class="text-primary q-mb-sm q-mt-lg">
-      <q-icon name="edit"/>TICKETS - EDITAR ENCABEZADO
+      Personalizar Ticket de Venta
     </h4>
 
-    <label for="tam">Selecciona el tamañano del papel de tu impresora: </label>
+    <label for="tam"><b class="text-primary">1.- </b>Selecciona el tamañano del papel de tu impresora: </label>
     <select id="tam" v-model="seleccionado" @change="formHasErrors">
       <option v-for='(opcion, index) of opciones' :value="index" :key="index" selected>
         {{opcion.size}}
       </option>
     </select>
-
-    <p>Escribe el texto para personalizar tu ticket</p>
-    <p style="color: red">
+    <p class="text-red">
       El máximo de caracteres por linea para tu impresora es: <b>{{ opciones[seleccionado].tam }} caracteres</b>
     </p>
+
+    <p><b class="text-primary">2.- </b>Escribe el texto para personalizar tu ticket</p>
     <form @submit.prevent="insertarTicket" class="q-pa-md q-gutter-sm">
       <q-btn color="primary" label="Añadir linea" icon-right="add_circle" @click="lines.push('')"/>
       <q-btn type="submit" color="green" icon-right="save" label="Guardar Ticket"/>

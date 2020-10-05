@@ -3,7 +3,7 @@
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
         <div class="col-10 q-mb-md">
-          <h4 class="text-primary q-mb-sm"><q-icon name="tapas"/> PRODUCTOS - CARGA MASIVA</h4>
+          <h4 class="text-primary q-mb-sm"><q-icon name="tapas"/> Edición rápida de Productos</h4>
           <p>
             Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
             <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
@@ -122,8 +122,8 @@ export default {
         this.$q.notify({ type: 'negative', message: 'Carga un archivo válido antes' })
         return
       }
-      this.$q.electron.ipcRenderer.send('call-insert-products', this.productos, true)
       this.isSending = true
+      this.$q.electron.ipcRenderer.send('call-insert-products', this.productos, true)
     },
     manageResponse (e, res) {
       /** For template configuration */

@@ -1,18 +1,13 @@
 <template>
   <div class="row justify-center items-center">
-    <div class="col-12 col-sm-12 q-pa-md q-gutter-sm text-center">
-      <q-banner rounded class="bg-blue-grey-6 text-white">
-        <p>De click en el siguiente botón para generar una plantilla con los productos que no pudieron cargarse</p>
-        <p><b>Corrija los errores para cargar estos datos nuevamente.</b></p>
-        <hr>
-        <q-btn color="orange-13" label="Generar plantilla con datos a corregir" icon="save" @click="saveErrorsFile()"/>
-      </q-banner>
+    <div class="col-10 q-mb-md">
+      <h4 class="text-red q-mb-sm"><q-icon name="cancel"/>Algunos datos no se insertaron</h4>
     </div>
     <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
       <q-expansion-item
         expand-separator
         icon="error"
-        label="Hubo errores al insertar (Click para ver)"
+        label="Listado de errores (Click para ver)"
         header-class="bg-red text-white"
         v-if="errors.length > 0"
       >
@@ -25,6 +20,14 @@
           </q-item>
         </q-list>
       </q-expansion-item>
+    </div>
+    <div class="col-12 col-sm-12 q-pa-md q-gutter-sm text-center">
+      <q-banner rounded class="bg-blue-grey-6 text-white">
+        <p>De click en el siguiente botón para generar una plantilla con los productos que no pudieron cargarse</p>
+        <p><b>Corrija los errores para cargar estos datos nuevamente.</b></p>
+        <hr>
+        <q-btn color="orange-13" label="Generar plantilla con datos a corregir" icon="save" @click="saveErrorsFile()"/>
+      </q-banner>
     </div>
     <div class="col-12 col-sm-10 q-pa-md q-gutter-sm">
       <div class="q-pa-md">

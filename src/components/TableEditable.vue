@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <div class="row justify-center">
       <div class="col-10 q-mb-md">
-        <h4 class="text-primary q-mb-sm"><q-icon name="person"/> PRODUCTOS - EDICIÓN RÁPIDA</h4>
+        <h4 class="text-primary q-mb-sm"><q-icon name="fact_check"/> Edición Rápida de Productos</h4>
       </div>
       <div class="col-10">
         <q-input
@@ -92,8 +92,8 @@
         </tbody>
       </q-markup-table>
       <q-page-sticky position="bottom-right" :offset="[40, 40]">
-        <q-btn round dense icon="save" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
-        <q-btn round dense icon="refresh" @click="$q.electron.ipcRenderer.send('call-get-products', search, (currentPage - 1) * itemsPerPage, itemsPerPage)" color="secondary" />
+        <q-btn dense icon="save" label="Guardar" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
+        <q-btn dense icon="refresh" label="Refrescar" @click="$q.electron.ipcRenderer.send('call-get-products', search, (currentPage - 1) * itemsPerPage, itemsPerPage)" color="secondary" />
       </q-page-sticky>
     </q-scroll-area>
     <div class="q-pa-lg flex flex-center">

@@ -47,7 +47,7 @@ function createWindow () {
   mainWindow.loadURL(process.env.APP_URL)
 
   mainWindow.on('close', function() {
-    console.log('SE CERROOOOOO')
+    mainWindow.webContents.send('close-window')
   })
 
   mainWindow.on('closed', () => {
@@ -168,3 +168,9 @@ ipcMain.on('llamar-add-Admin', async (event) => {
   const result = await addAdmin()
   event.reply('responder-add-Admin', result)
 })
+
+ipcMain.on('force-close-window', async (event) => {
+  mainWindow.webContents.send('close-window')
+  mainWindow.close()
+})
+

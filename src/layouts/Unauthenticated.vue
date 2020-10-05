@@ -25,6 +25,12 @@
           replace
           label="emergencia"
         />
+        <q-tab
+          icon="power_settings_new"
+          replace
+          label="Salir"
+          @click="closeWindow"
+        />
       </q-tabs>
     </q-footer>
 
@@ -40,6 +46,11 @@ export default {
   name: 'Unauthenticated',
   data () {
     return {}
+  },
+  methods: {
+    closeWindow () {
+      this.$q.electron.ipcRenderer.send('force-close-window')
+    }
   }
 }
 </script>

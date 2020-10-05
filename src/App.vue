@@ -14,6 +14,10 @@ export default {
     this.activateSerial()
     this.validateSession()
     this.$router.push('/')
+    this.$q.electron.ipcRenderer.on('close-window', this.logout)
+  },
+  beforeDestroy () {
+    this.$q.electron.ipcRenderer.removeListener('close-window', this.logout)
   },
   methods: {
     validateSession () {
@@ -25,6 +29,9 @@ export default {
     async activateSerial () {
       const serial = localStorage.getItem('serial-code')
       this.$store.commit('security/setIsActivated', serial)
+    },
+    logout () {
+      this.$store.commit('security/logout')
     }
   }
 }

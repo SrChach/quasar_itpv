@@ -18,7 +18,7 @@
         <q-btn
           flat
           icon-right="logout"
-          label="Salir"
+          label="Cerrar Sesión"
           aria-label="Logout"
           @click="closeSession"
         />
@@ -78,12 +78,6 @@ export default {
           link: '/'
         },
         {
-          title: 'Edición rápida de Productos',
-          caption: 'Ver y actualizar datos de los productos',
-          icon: 'fact_check',
-          link: '/products'
-        },
-        {
           title: 'Cargar productos',
           caption: 'Carga productos desde un excel',
           icon: 'tapas',
@@ -96,8 +90,14 @@ export default {
           link: '/customers'
         },
         {
-          title: 'Cargar tickets',
-          caption: 'Load XML files',
+          title: 'Editar Productos',
+          caption: 'Ver y actualizar datos de los productos',
+          icon: 'fact_check',
+          link: '/products'
+        },
+        {
+          title: 'Personalizar tickets',
+          caption: 'Agregue los datos de su negocio en el ticket de venta',
           icon: 'code',
           link: '/tickets'
         }
