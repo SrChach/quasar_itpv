@@ -1,7 +1,9 @@
 <template>
 <center>
   <q-page padding class="q-pa-md q-gutter-sm">
-    <h4>Edicion del encabezado del ticket</h4>
+    <h4 class="text-primary q-mb-sm q-mt-lg">
+      <q-icon name="edit"/>TICKETS - EDITAR ENCABEZADO
+    </h4>
 
     <label for="tam">Selecciona el tamañano del papel de tu impresora: </label>
     <select id="tam" v-model="seleccionado" @change="formHasErrors">

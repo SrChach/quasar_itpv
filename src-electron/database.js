@@ -2,13 +2,14 @@ const mysql = require('promise-mysql')
 
 function createConnection () {
   try {
-    return mysql.createConnection({
+    const connection = mysql.createConnection({
       host: 'localhost',
       database: 'itpv',
       user: 'root',
       password: 'cobusiness1348',
       port: 3336
     })
+    return connection
   } catch (error) {
     return undefined
   }

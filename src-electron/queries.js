@@ -7,6 +7,17 @@ const Hex = require('crypto-js/enc-hex')
 
 let conn = null
 
+
+/** Manage error and success with same interface */
+function errorMessage (error) {
+  return { data: null, error: String(error) }
+};
+
+function successMessage (data) {
+  return { data: data, error: null }
+}
+
+
 const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
   try {
     if (conn === null) { conn = await getConnection() }
@@ -14,12 +25,17 @@ const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
       SELECT CEILING(COUNT(*) / ?) AS totalPages
         FROM products p
         WHERE
-          p.NAME REGEXP ? OR p.CODE REGEXP ? OR p.REFERENCE REGEXP ?
+          p.NAME REGEXP ?
+          OR p.CODE REGEXP ?
+          OR p.REFERENCE REGEXP ?
+          OR p.CATEGORY IN (
+            SELECT ID FROM categories WHERE NAME REGEXP ?
+          )
     `
-    const result = await conn.query(countQuery, [itemsPerPage, search, search, search])
-    return result[0]
+    const result = await conn.query(countQuery, [itemsPerPage, search, search, search, search])
+    return successMessage(result[0])
   } catch (error) {
-    return []
+    return errorMessage(error)
   }
 }
 
@@ -33,7 +49,12 @@ const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
             (
               SELECT * FROM products
                 WHERE
-                  NAME REGEXP ? OR CODE REGEXP ? OR REFERENCE REGEXP ?
+                  NAME REGEXP ?
+                  OR CODE REGEXP ?
+                  OR REFERENCE REGEXP ?
+                  OR CATEGORY IN (
+                    SELECT ID FROM categories WHERE NAME REGEXP ?
+                  )
                 ${limit}
             ) p
           LEFT JOIN
@@ -47,10 +68,10 @@ const getProducts = async (search = '.*', offset = 0, itemsPerPage = 5) => {
           LEFT JOIN categories c ON c.ID = p.CATEGORY
         ORDER BY CATEGORIA, NAME
     `
-    const result = await conn.query(productsQuery, [search, search, search])
-    return result
+    const result = await conn.query(productsQuery, [search, search, search, search])
+    return successMessage(result)
   } catch (error) {
-    return []
+    return errorMessage(error)
   }
 }
 
@@ -58,17 +79,23 @@ const checkAdminUser = async (pass = '') => {
   try {
     if (conn === null) { conn = await getConnection() }
     const encryped = SHA1(pass).toString(Hex).toUpperCase()
-    const res = await conn.query(`SELECT APPPASSWORD FROM people WHERE ID = 0 AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )`)
+    const res = await conn.query(`SELECT
+        APPPASSWORD, NAME
+      FROM people
+      WHERE
+        ID = 0
+        AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )
+    `)
 
     // eslint-disable-next-line eqeqeq
     if (res.length == 1) {
-      let pass = res[0].APPPASSWORD
-      pass = (pass === null) ? SHA1(pass).toString(Hex).toUpperCase() : pass.replace('sha1:', '')
-      return { data: pass, error: null }
+      let password = res[0].APPPASSWORD
+      password = (password === null) ? SHA1(password).toString(Hex).toUpperCase() : password.replace('sha1:', '')
+      return successMessage({ password, name: res[0].NAME })
     }
-    return { error: 'Password incorrecto. Checalo en la aplicación de ITPV' }
+    return errorMessage('Password incorrecto. Checalo en la aplicación de ITPV')
   } catch (error) {
-    return { error: `Error. Cheque que ITPV esté corriendo y reinicie esta aplicacion. Codigo: ${error.errno}` }
+    return errorMessage(`Error. Cheque que ITPV esté corriendo y reinicie esta aplicacion. Codigo: ${error.errno}`)
   }
 }
 

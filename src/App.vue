@@ -18,7 +18,9 @@ export default {
   methods: {
     validateSession () {
       const shaCode = localStorage.getItem('sha-code')
+      const clientName = localStorage.getItem('client-name')
       this.$store.commit('security/setIsAuthenticated', shaCode)
+      this.$store.commit('security/setClientName', clientName)
     },
     async activateSerial () {
       const serial = localStorage.getItem('serial-code')

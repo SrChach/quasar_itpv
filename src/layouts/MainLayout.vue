@@ -78,7 +78,7 @@ export default {
           link: '/'
         },
         {
-          title: 'Actualizar Productos',
+          title: 'Edición rápida de Productos',
           caption: 'Ver y actualizar datos de los productos',
           icon: 'fact_check',
           link: '/products'

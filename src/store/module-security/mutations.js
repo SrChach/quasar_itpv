@@ -19,6 +19,11 @@ export function setIsActivated (state, payload) {
   }
 }
 
+export function setClientName (state, payload) {
+  localStorage.setItem('client-name', payload)
+  state.clientName = payload
+}
+
 export function logout (state) {
   localStorage.removeItem('sha-code')
   state.shaCode = null

@@ -22,6 +22,8 @@ if (process.env.PROD) {
 let mainWindow
 
 function createWindow () {
+  var force_quit = false
+
   /**
    * Initial window options
    */
@@ -43,6 +45,10 @@ function createWindow () {
   mainWindow.removeMenu()
 
   mainWindow.loadURL(process.env.APP_URL)
+
+  mainWindow.on('close', function() {
+    console.log('SE CERROOOOOO')
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null

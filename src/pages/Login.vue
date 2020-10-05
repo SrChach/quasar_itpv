@@ -48,7 +48,8 @@ export default {
         this.$q.notify({ type: 'negative', message: response.error })
         return 0
       }
-      const encrypted = response.data
+      const encrypted = response.data.password
+      const clientName = response.data.name
       const options = {
         color: 'red-4',
         textColor: 'white',
@@ -59,6 +60,7 @@ export default {
       var isSuccesful = false
       if (typeof encrypted === 'string') {
         isSuccesful = this.validate_user(encrypted)
+        this.$store.commit('security/setClientName', clientName)
       }
       if (isSuccesful) {
         options.color = 'green-4'

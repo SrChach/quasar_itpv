@@ -1,10 +1,13 @@
 <template>
   <div class="q-pa-md">
     <div class="row justify-center">
+      <div class="col-10 q-mb-md">
+        <h4 class="text-primary q-mb-sm"><q-icon name="person"/> PRODUCTOS - EDICIÓN RÁPIDA</h4>
+      </div>
       <div class="col-10">
         <q-input
           v-model="search"
-          label="Busca por nombre, código o referencia"
+          label="Busca por nombre, categoría, código o referencia"
           type="text" outlined rounded dense clearable color="secondary" class="q-mb-sm"
           @keyup.enter="searchFromZero()"
         >
@@ -35,12 +38,14 @@
 
               <div v-else>
                 <div v-if="cell.edit === null">
-                  {{ cell.original }}
-                  <q-btn
-                    round
-                    color="secondary"
-                    icon="edit"
-                    size="xs"
+                  <q-input
+                    :value="cell.original"
+                    :label="cell.name"
+                    readonly
+                    type="text"
+                    style="min-width: 120px"
+                    dense
+                    outlined
                     @click="cell.edit = (cell.original != null) ? cell.original : ''"
                   />
                 </div>
@@ -56,6 +61,7 @@
                   clearable
                   dense
                   outlined
+                  autogrow
                 />
               </div>
             </td>
@@ -164,7 +170,11 @@ export default {
 
   methods: {
     setTotalPages (e, res) {
-      this.totalPages = res.totalPages
+      if (res.data !== null) {
+        this.totalPages = res.totalPages
+      } else {
+        this.$q.notify({ type: 'negative', message: res.error })
+      }
     },
 
     changeItemsPerPage () {
@@ -208,7 +218,12 @@ export default {
     },
 
     list_products (event, res) {
-      this.rendering = this.cleanData(res, this.showingColumns)
+      if (res.data !== null) {
+        this.rendering = this.cleanData(res.data, this.showingColumns)
+      } else {
+        console.log(res.error)
+        this.$q.notify({ type: 'negative', message: res.error })
+      }
     },
 
     restoreRow (rowId, table = '') {
