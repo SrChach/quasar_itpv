@@ -95,7 +95,7 @@
       </q-markup-table>
       <q-page-sticky position="bottom-right" :offset="[40, 40]">
         <q-btn dense icon="save" label="Guardar" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
-        <q-btn dense icon="refresh" label="Refrescar" @click="$q.electron.ipcRenderer.send('call-get-products', search, (currentPage - 1) * itemsPerPage, itemsPerPage)" color="secondary" />
+        <q-btn dense icon="refresh" label="Refrescar" @click="refreshPage" color="secondary" />
       </q-page-sticky>
     </q-scroll-area>
     <div class="q-pa-lg flex flex-center">
@@ -244,6 +244,28 @@ export default {
       })
     },
 
+    refreshPage () {
+      const modifiedRowIndexes = this.getModifiedRowIndexes()
+      if (modifiedRowIndexes.length > 0) {
+        this.$q.notify({
+          message: 'Tienes cambios sin guardar',
+          type: 'warning',
+          actions: [
+            { label: 'Quedarse', color: 'black' },
+            {
+              label: 'Refrescar sin guardar',
+              color: 'negative',
+              handler: () => {
+                this.$q.electron.ipcRenderer.send('call-get-products', this.search, (this.currentPage - 1) * this.itemsPerPage, this.itemsPerPage)
+              }
+            }
+          ]
+        })
+      } else {
+        this.$q.electron.ipcRenderer.send('call-get-products', this.search, (this.currentPage - 1) * this.itemsPerPage, this.itemsPerPage)
+      }
+    },
+
     saveChangesLocally (rowId, table = '') {
       const row = this.rendering[rowId]
       row.forEach(el => {
@@ -256,12 +278,16 @@ export default {
       })
     },
 
-    saveAllChanges () {
-      const modifiedRowIndexes = this.rendering.reduce((acum, valorActual, index) => {
+    getModifiedRowIndexes () {
+      return this.rendering.reduce((acum, valorActual, index) => {
         const isModified = valorActual.some(obj => obj.edit !== null && obj.edit !== undefined)
         if (isModified) acum.push(index)
         return acum
       }, [])
+    },
+
+    saveAllChanges () {
+      const modifiedRowIndexes = this.getModifiedRowIndexes()
       if (modifiedRowIndexes.length < 1) {
         this.$q.notify({ type: 'warning', message: 'No tienes cambios para guardar' })
         return

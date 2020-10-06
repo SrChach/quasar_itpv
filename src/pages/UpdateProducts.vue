@@ -1,7 +1,11 @@
 <template>
   <q-page class="flex flex-center justify-center">
     <div class="q-pa-md">
-      <custom-table :datatable="data" :showingColumns="showingColumns"/>
+      <custom-table
+        ref="child"
+        :datatable="data"
+        :showingColumns="showingColumns"
+      />
     </div>
   </q-page>
 </template>
@@ -42,6 +46,26 @@ export default {
   },
   components: {
     'custom-table': table
+  },
+
+  beforeRouteLeave (to, from, next) {
+    const modifiedRowIndexes = this.$refs.child.getModifiedRowIndexes()
+    if (modifiedRowIndexes.length > 0) {
+      this.$q.notify({
+        message: 'Tienes cambios sin guardar',
+        type: 'warning',
+        actions: [
+          { label: 'Quedarse', color: 'black' },
+          {
+            label: 'Salir sin guardar',
+            color: 'negative',
+            handler: () => { next() }
+          }
+        ]
+      })
+    } else {
+      next()
+    }
   }
 }
 </script>
