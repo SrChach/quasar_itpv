@@ -21,7 +21,7 @@ export default {
         { name: 'CATEGORIA', editable: false },
         { name: 'PRICEBUY', editable: true, table: 'products', type: 'number' },
         { name: 'PRICESELL', editable: true, table: 'products', type: 'number' },
-        { name: 'TAXCAT', editable: false, table: 'products' },
+        { name: 'TAXCAT', editable: false, table: 'products', display: { '000': 'Excento de impuesto', '001': 'IVA' } },
         { name: 'PRICESELL2', editable: true, table: 'products', type: 'number' },
         { name: 'PRICESELL3', editable: true, table: 'products', type: 'number' },
         { name: 'PRICESELL4', editable: true, table: 'products', type: 'number' },

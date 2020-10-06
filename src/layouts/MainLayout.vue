@@ -43,6 +43,23 @@
           :key="link.title"
           v-bind="link"
         />
+        <div style="position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: auto;">
+          <q-item tag="a" @click="openVideo">
+            <q-item-section avatar>
+              <q-icon name="play_circle_filled" />
+            </q-item-section>
+
+            <q-item-section>
+              <q-item-label>Videotutorial ITPV</q-item-label>
+              <q-item-label caption>
+                Tutorial guia para usar iTPV y sus complementos
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+        </div>
       </q-list>
     </q-drawer>
 
@@ -64,6 +81,9 @@ export default {
     closeSession () {
       this.$store.commit('security/logout')
       this.$router.push('/unauthenticated')
+    },
+    openVideo () {
+      this.$q.electron.ipcRenderer.send('open-url', 'https://www.youtube.com/watch?v=3wDKI4IA7H8')
     }
   },
 

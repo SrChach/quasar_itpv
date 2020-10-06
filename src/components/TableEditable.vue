@@ -209,6 +209,13 @@ export default {
           if (field.table) inside.table = field.table
           if (field.type) inside.type = field.type
           if (field.hidden) inside.hidden = field.hidden
+          /** Condicion rara */
+          if (field.display !== undefined) {
+            const displaying = field.display[inside.original]
+            if (displaying !== undefined) {
+              inside.original = displaying
+            }
+          }
           selected.push(inside)
         })
         return selected
