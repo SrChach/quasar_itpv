@@ -4,12 +4,15 @@
       <div class="row justify-center items-center">
         <div class="col-10 q-mb-md">
           <h4 class="text-primary q-mb-sm"><q-icon name="tapas"/> Edición rápida de Productos</h4>
+        </div>
+        <div class="col-10 q-pa-md q-gutter-sm">
           <p>
-            Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
+            <b class="text-primary">1.- </b> Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
             <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
           </p>
         </div>
-        <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
+        <div class="col-10 q-pa-md q-gutter-sm">
+          <p><b class="text-primary">2.- </b> Inserta tu archivo Excel o CSV</p>
           <div v-show="!isSending">
             <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
             <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
@@ -17,7 +20,8 @@
           </div>
           <q-spinner-hourglass size="md" v-show="isSending" color="secondary"/>
         </div>
-        <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
+        <div v-if="productos.length > 0" class="col-10 q-pa-md q-gutter-sm">
+          <p><b class="text-primary">3.- </b> Carga tus productos</p>
           <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon="add_circle" @click="insertData()" />
           <span v-else>Esperando a que se inserten los productos</span>
         </div>
