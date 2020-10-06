@@ -83,7 +83,7 @@ export default {
       this.$router.push('/unauthenticated')
     },
     openVideo () {
-      this.$q.electron.ipcRenderer.send('open-url', 'https://www.youtube.com/watch?v=3wDKI4IA7H8')
+      this.$q.electron.ipcRenderer.send('open-url', 'https://www.youtube.com/channel/UCQGv7n_C4mxSmmJarh-w9kg')
     }
   },
 
