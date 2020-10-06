@@ -1,5 +1,6 @@
 <template>
   <div>
+    <center>
     <q-file
       style="max-width: 300px"
       v-model="excelFile"
@@ -13,6 +14,7 @@
         <q-icon name="cancel" @click.stop.prevent="cleanFile" class="cursor-pointer" />
       </template>
     </q-file>
+    </center>
   </div>
 </template>
 
