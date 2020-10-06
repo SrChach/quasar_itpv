@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme, ipcMain } from 'electron'
+import { app, BrowserWindow, nativeTheme, ipcMain, shell } from 'electron'
 import {
   getProducts, getTotalPages, checkAdminUser, insertTicket, updateProduct,
   updateStockCurrent, updateStockLevel, insertProducts, insertCustomers, deleteAdmin, showID, deleteWINLogo,
@@ -173,4 +173,9 @@ ipcMain.on('force-close-window', async (event) => {
   mainWindow.webContents.send('close-window')
   mainWindow.close()
 })
+
+ipcMain.on('open-url', async (event, url) => {
+  shell.openExternal(url)
+})
+
 

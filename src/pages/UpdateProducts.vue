@@ -1,7 +1,11 @@
 <template>
   <q-page class="flex flex-center justify-center">
     <div class="q-pa-md">
-      <custom-table :datatable="data" :showingColumns="showingColumns"/>
+      <custom-table
+        ref="child"
+        :datatable="data"
+        :showingColumns="showingColumns"
+      />
     </div>
   </q-page>
 </template>
@@ -15,33 +19,53 @@ export default {
       data: [],
       showingColumns: [
         { name: 'ID', editable: false, _id: true, table: 'products', hidden: true },
-        { name: 'REFERENCE', editable: true, table: 'products' },
-        { name: 'CODE', editable: true, table: 'products' },
-        { name: 'NAME', editable: true, table: 'products' },
+        { name: 'REFERENCE', header: 'REFERENCIA', editable: true, table: 'products' },
+        { name: 'CODE', header: 'CODIGO', editable: true, table: 'products' },
+        { name: 'NAME', header: 'NOMBRE', editable: true, table: 'products' },
         { name: 'CATEGORIA', editable: false },
-        { name: 'PRICEBUY', editable: true, table: 'products', type: 'number' },
-        { name: 'PRICESELL', editable: true, table: 'products', type: 'number' },
-        { name: 'TAXCAT', editable: false, table: 'products' },
-        { name: 'PRICESELL2', editable: true, table: 'products', type: 'number' },
-        { name: 'PRICESELL3', editable: true, table: 'products', type: 'number' },
-        { name: 'PRICESELL4', editable: true, table: 'products', type: 'number' },
-        { name: 'PRICESELL5', editable: true, table: 'products', type: 'number' },
-        { name: 'PRICESELL6', editable: true, table: 'products', type: 'number' },
-        { name: 'PRICESELL7', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICEBUY', header: 'PRECIO COMPRA', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICESELL', header: 'PRECIO VENTA', editable: true, table: 'products', type: 'number' },
+        { name: 'TAXCAT', header: 'IMPUESTO', editable: false, table: 'products', accepted: { '000': 'Excento de impuesto', '001': 'IVA' } },
+        { name: 'PRICESELL2', header: 'PRECIO VENTA 2', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICESELL3', header: 'PRECIO VENTA 3', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICESELL4', header: 'PRECIO VENTA 4', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICESELL5', header: 'PRECIO VENTA 5', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICESELL6', header: 'PRECIO VENTA 6', editable: true, table: 'products', type: 'number' },
+        { name: 'PRICESELL7', header: 'PRECIO VENTA 7', editable: true, table: 'products', type: 'number' },
         { name: 'MARCA', editable: true, table: 'products' },
         { name: 'MODELO', editable: true, table: 'products' },
         { name: 'MONEDERO', editable: true, table: 'products', type: 'number' },
-        { name: 'DISCOUNT', editable: true, table: 'products', type: 'number' },
+        { name: 'DISCOUNT', header: 'DESCUENTO', editable: true, table: 'products', type: 'number' },
         { name: 'SERIE', editable: true, table: 'products' },
         { name: 'MEDIDA', editable: true, table: 'products' },
-        { name: 'UNITS', editable: true, table: 'stockcurrent', type: 'number' },
-        { name: 'STOCKSECURITY', editable: true, table: 'stocklevel', type: 'number' },
-        { name: 'STOCKMAXIMUM', editable: true, table: 'stocklevel', type: 'number' }
+        { name: 'UNITS', header: 'CANTIDAD', editable: true, table: 'stockcurrent', type: 'number' },
+        { name: 'STOCKSECURITY', header: 'STOCK MINIMO', editable: true, table: 'stocklevel', type: 'number' },
+        { name: 'STOCKMAXIMUM', header: 'STOCK MAXIMO', editable: true, table: 'stocklevel', type: 'number' }
       ]
     }
   },
   components: {
     'custom-table': table
+  },
+
+  beforeRouteLeave (to, from, next) {
+    const modifiedRowIndexes = this.$refs.child.getModifiedRowIndexes()
+    if (modifiedRowIndexes.length > 0) {
+      this.$q.notify({
+        message: 'Tienes cambios sin guardar',
+        type: 'warning',
+        actions: [
+          { label: 'Quedarse', color: 'black' },
+          {
+            label: 'Salir sin guardar',
+            color: 'negative',
+            handler: () => { next() }
+          }
+        ]
+      })
+    } else {
+      next()
+    }
   }
 }
 </script>

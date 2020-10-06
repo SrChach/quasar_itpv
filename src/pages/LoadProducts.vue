@@ -3,32 +3,23 @@
     <q-page class="flex flex-center" v-if="errors.length < 1">
       <div class="row justify-center items-center">
         <div class="col-10 q-mb-md">
-          <h4 class="text-primary q-mb-sm" align="center"><q-icon name="tapas"/> PRODUCTOS - CARGA MASIVA</h4>
-          <p align="center">
-            <b class="text-h5 blue-7">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
-            <br><br>
+          <h4 class="text-primary q-mb-sm"><q-icon name="tapas"/> Edición rápida de Productos</h4>
+          <p>
+            Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
             <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
-            <br>
-            <b class="text-h5 blue-7">2.-</b> Seleccione la ubicacion de la plantilla con todos los datos de sus productos
           </p>
         </div>
-        <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
+        <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
           <div v-show="!isSending">
-            <p align="center">
-              <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
-              <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
-              <componente-de-excel @change-excel="setProductsData"/>
-            </p>
+            <q-chip v-if="(productos.length < 1)" color="red" text-color="white" icon="warning" label="Selecciona un archivo con formato válido" />
+            <q-chip v-else color="green" text-color="white" icon="check_circle" label="Datos del excel cargados" />
+            <componente-de-excel @change-excel="setProductsData"/>
           </div>
           <q-spinner-hourglass size="md" v-show="isSending" color="secondary"/>
         </div>
-        <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
-          <p align="center">
-            <b class="text-h5 blue-7">3.-</b> Presione el boton "CARGAR DATOS" para iniciar la carga masiva a iTPV 3.0
-            <br><br>
-            <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon="add_circle" @click="insertData()" />
-            <span v-else>Esperando a que se inserten los productos</span>
-          </p>
+        <div class="col-12 col-sm-6 q-pa-md q-gutter-sm">
+          <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon="add_circle" @click="insertData()" />
+          <span v-else>Esperando a que se inserten los productos</span>
         </div>
       </div>
     </q-page>

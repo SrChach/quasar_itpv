@@ -25,7 +25,9 @@
       <q-markup-table class="col-11" style="margin: 0 5px;">
         <thead>
           <tr>
-            <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">{{ header.name }}</th>
+            <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">
+              {{ (header.header) ? header.header : header.name }}
+            </th>
             <th class="text-right">Actions</th>
           </tr>
         </thead>
@@ -93,7 +95,7 @@
       </q-markup-table>
       <q-page-sticky position="bottom-right" :offset="[40, 40]">
         <q-btn dense icon="save" label="Guardar" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
-        <q-btn dense icon="refresh" label="Refrescar" @click="$q.electron.ipcRenderer.send('call-get-products', search, (currentPage - 1) * itemsPerPage, itemsPerPage)" color="secondary" />
+        <q-btn dense icon="refresh" label="Refrescar" @click="refreshPage" color="secondary" />
       </q-page-sticky>
     </q-scroll-area>
     <div class="q-pa-lg flex flex-center">
@@ -171,7 +173,7 @@ export default {
   methods: {
     setTotalPages (e, res) {
       if (res.data !== null) {
-        this.totalPages = res.totalPages
+        this.totalPages = res.data.totalPages
       } else {
         this.$q.notify({ type: 'negative', message: res.error })
       }
@@ -204,11 +206,19 @@ export default {
             name: field.name,
             original: el[field.name]
           }
+          if (field.header) inside.header = field.header
           if (field.editable) inside.edit = null
           if (field._id) inside._id = true
           if (field.table) inside.table = field.table
           if (field.type) inside.type = field.type
           if (field.hidden) inside.hidden = field.hidden
+          /** Condicion rara */
+          if (field.accepted !== undefined) {
+            const displaying = field.accepted[inside.original]
+            if (displaying !== undefined) {
+              inside.original = displaying
+            }
+          }
           selected.push(inside)
         })
         return selected
@@ -221,7 +231,6 @@ export default {
       if (res.data !== null) {
         this.rendering = this.cleanData(res.data, this.showingColumns)
       } else {
-        console.log(res.error)
         this.$q.notify({ type: 'negative', message: res.error })
       }
     },
@@ -233,6 +242,28 @@ export default {
           if (table === '' || (table !== '' && el.table === table)) el.edit = null
         }
       })
+    },
+
+    refreshPage () {
+      const modifiedRowIndexes = this.getModifiedRowIndexes()
+      if (modifiedRowIndexes.length > 0) {
+        this.$q.notify({
+          message: 'Tienes cambios sin guardar',
+          type: 'warning',
+          actions: [
+            { label: 'Quedarse', color: 'black' },
+            {
+              label: 'Refrescar sin guardar',
+              color: 'negative',
+              handler: () => {
+                this.$q.electron.ipcRenderer.send('call-get-products', this.search, (this.currentPage - 1) * this.itemsPerPage, this.itemsPerPage)
+              }
+            }
+          ]
+        })
+      } else {
+        this.$q.electron.ipcRenderer.send('call-get-products', this.search, (this.currentPage - 1) * this.itemsPerPage, this.itemsPerPage)
+      }
     },
 
     saveChangesLocally (rowId, table = '') {
@@ -247,12 +278,16 @@ export default {
       })
     },
 
-    saveAllChanges () {
-      const modifiedRowIndexes = this.rendering.reduce((acum, valorActual, index) => {
+    getModifiedRowIndexes () {
+      return this.rendering.reduce((acum, valorActual, index) => {
         const isModified = valorActual.some(obj => obj.edit !== null && obj.edit !== undefined)
         if (isModified) acum.push(index)
         return acum
       }, [])
+    },
+
+    saveAllChanges () {
+      const modifiedRowIndexes = this.getModifiedRowIndexes()
       if (modifiedRowIndexes.length < 1) {
         this.$q.notify({ type: 'warning', message: 'No tienes cambios para guardar' })
         return
