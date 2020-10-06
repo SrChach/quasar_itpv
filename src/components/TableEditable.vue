@@ -173,7 +173,7 @@ export default {
   methods: {
     setTotalPages (e, res) {
       if (res.data !== null) {
-        this.totalPages = res.totalPages
+        this.totalPages = res.data.totalPages
       } else {
         this.$q.notify({ type: 'negative', message: res.error })
       }
