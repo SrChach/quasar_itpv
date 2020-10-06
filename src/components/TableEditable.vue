@@ -25,7 +25,9 @@
       <q-markup-table class="col-11" style="margin: 0 5px;">
         <thead>
           <tr>
-            <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">{{ header.name }}</th>
+            <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">
+              {{ (header.header) ? header.header : header.name }}
+            </th>
             <th class="text-right">Actions</th>
           </tr>
         </thead>
@@ -204,14 +206,15 @@ export default {
             name: field.name,
             original: el[field.name]
           }
+          if (field.header) inside.header = field.header
           if (field.editable) inside.edit = null
           if (field._id) inside._id = true
           if (field.table) inside.table = field.table
           if (field.type) inside.type = field.type
           if (field.hidden) inside.hidden = field.hidden
           /** Condicion rara */
-          if (field.display !== undefined) {
-            const displaying = field.display[inside.original]
+          if (field.accepted !== undefined) {
+            const displaying = field.accepted[inside.original]
             if (displaying !== undefined) {
               inside.original = displaying
             }
@@ -228,7 +231,6 @@ export default {
       if (res.data !== null) {
         this.rendering = this.cleanData(res.data, this.showingColumns)
       } else {
-        console.log(res.error)
         this.$q.notify({ type: 'negative', message: res.error })
       }
     },
