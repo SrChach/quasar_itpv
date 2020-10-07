@@ -1,20 +1,10 @@
 <template>
   <q-page padding>
-    <q-banner v-if="!isConscient" inline-actions rounded class="text-white bg-red">
-      <p class="text-h5">ALERTA:</p>
-      Antes de ejecutar este módulo, contacta a soporte de SMG Puntos de Venta.
-      Estos comandos podrían afectar el funcionamiento de la aplicación.
-      <template v-slot:action>
-        <q-btn
-          flat
-          color="white"
-          label="Continuar de todos modos"
-          @click="isConscient = true"
-        />
-      </template>
+    <q-banner inline-actions rounded class="bg-red text-white text-center">
+      <b class="text-h5">Estos comandos son para uso de usuarios avanzados, por favor antes de ejecutar cualquiera de los siguientes comandos contacte a soporte de SMG Puntos de Venta</b>
     </q-banner>
     <br><br>
-    <div class="row q-gutter-md justify-center" v-if="(pass != definedPass) && isConscient">
+    <div class="row q-gutter-md justify-center" v-if="(pass != definedPass)">
       <q-card flat bordered class="bg-yellow-4">
         <q-card-section>
           <div class="text-h6">Autenticacion</div>
@@ -121,8 +111,7 @@ export default {
     return {
       sql: '',
       pass: '',
-      definedPass: 'smgpdv20',
-      isConscient: false
+      definedPass: 'smgpdv20'
     }
   },
   methods: {
