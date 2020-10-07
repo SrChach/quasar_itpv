@@ -5,11 +5,11 @@
         <div class="col-10 q-mb-md">
           <h4 class="text-primary q-mb-sm" align="center"><q-icon name="tapas"/> PRODUCTOS - CARGA MASIVA</h4>
           <p align="center">
-            <b class="text-h5 text-primary">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
+            <b class="text-h6 text-primary">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
             <br><br>
             <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
             <br>
-            <b class="text-h5 text-primary">2.-</b> Seleccione la ubicacion de la plantilla con todos los datos de sus productos
+            <b class="text-h6 text-primary">2.-</b> Seleccione la ubicacion de la plantilla con todos los datos de sus productos
           </p>
         </div>
         <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
@@ -24,7 +24,7 @@
         </div>
         <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
           <p align="center">
-            <b class="text-h5 text-primary">3.-</b> Presione el boton "CARGAR DATOS" para iniciar la carga masiva a iTPV 3.0
+            <b class="text-h6 text-primary">3.-</b> Presione el boton "CARGAR DATOS" para iniciar la carga masiva a iTPV 3.0
             <br><br>
             <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon="add_circle" @click="insertData()" />
             <span v-else>Esperando a que se inserten los productos</span>

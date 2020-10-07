@@ -1,17 +1,35 @@
 <template>
   <q-page padding>
-    <q-banner inline-actions rounded class="bg-red text-white text-center">
-      <b class="text-h5">Estos comandos son para uso de usuarios avanzados, por favor antes de ejecutar cualquiera de los siguientes comandos contacte a soporte de SMG Puntos de Venta</b>
+    <q-banner v-if="!isConscient" inline-actions rounded class="text-white bg-red">
+      <p class="text-h5">ALERTA:</p>
+      Antes de ejecutar este módulo, contacta a soporte de SMG Puntos de Venta.
+      Estos comandos podrían afectar el funcionamiento de la aplicación.
+      <template v-slot:action>
+        <q-btn
+          flat
+          color="white"
+          label="Continuar de todos modos"
+          @click="isConscient = true"
+        />
+      </template>
     </q-banner>
     <br><br>
-    <div class="row q-gutter-md justify-center" v-if="pass != 'smgpdv20'">
-      <div class="col-5 bg-yellow-4">
-        <p class="text-h6 text-center">Escribe la contraseña de acceso a las herramientas de emergencia</p>
-        <br>
-        <q-input label="contraseña" v-model="pass"/>
-      </div>
+    <div class="row q-gutter-md justify-center" v-if="(pass != definedPass) && isConscient">
+      <q-card flat bordered class="bg-yellow-4">
+        <q-card-section>
+          <div class="text-h6">Autenticacion</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          Escribe aqui la contraseña proporcionada por soporte de SMG
+        </q-card-section>
+
+        <q-card-section>
+          <q-input label="contraseña" v-model="pass"/>
+        </q-card-section>
+      </q-card>
     </div>
-    <div class="row q-gutter-md justify-center" v-else>
+    <div class="row q-gutter-md justify-center" v-if="pass == definedPass">
       <div class="col-5 q-gutter-md">
           <q-card class="my-card">
             <q-card-section class="bg-light-blue-8 text-white">
@@ -102,7 +120,9 @@ export default {
   data: function () {
     return {
       sql: '',
-      pass: ''
+      pass: '',
+      definedPass: 'smgpdv20',
+      isConscient: false
     }
   },
   methods: {

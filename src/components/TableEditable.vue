@@ -93,7 +93,7 @@
           </tr>
         </tbody>
       </q-markup-table>
-      <q-page-sticky position="bottom-right" :offset="[40, 40]">
+      <q-page-sticky position="bottom-right" :offset="[40, 40]" style="z-index: 1;">
         <q-btn dense icon="save" label="Guardar" color="amber" @click="saveAllChanges()" class="q-mb-sm"/><br>
         <q-btn dense icon="refresh" label="Refrescar" @click="refreshPage" color="secondary" />
       </q-page-sticky>
