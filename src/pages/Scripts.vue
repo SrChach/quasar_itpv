@@ -3,7 +3,15 @@
     <q-banner inline-actions rounded class="bg-red text-white text-center">
       <b class="text-h5">Estos comandos son para uso de usuarios avanzados, por favor antes de ejecutar cualquiera de los siguientes comandos contacte a soporte de SMG Puntos de Venta</b>
     </q-banner>
-    <div class="row q-gutter-md justify-center">
+    <br><br>
+    <div class="row q-gutter-md justify-center" v-if="pass != 'smgpdv20'">
+      <div class="col-5 bg-yellow-4">
+        <p class="text-h6 text-center">Escribe la contraseña de acceso a las herramientas de emergencia</p>
+        <br>
+        <q-input label="contraseña" v-model="pass"/>
+      </div>
+    </div>
+    <div class="row q-gutter-md justify-center" v-else>
       <div class="col-5 q-gutter-md">
           <q-card class="my-card">
             <q-card-section class="bg-light-blue-8 text-white">
