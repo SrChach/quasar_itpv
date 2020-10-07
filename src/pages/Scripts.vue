@@ -1,80 +1,83 @@
 <template>
   <q-page padding>
-    <div class="q-pa-md q-gutter-sm">
-          <q-card class="my-card text-white" style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
-            <q-card-section>
-                <div class="text-h6">Reiniciar Usuario Administrador</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
+    <q-banner inline-actions rounded class="bg-red text-white text-center">
+      <b class="text-h5">Estos comandos son para uso de usuarios avanzados, por favor antes de ejecutar cualquiera de los siguientes comandos contacte a soporte de SMG Puntos de Venta</b>
+    </q-banner>
+    <div class="row q-gutter-md justify-center">
+      <div class="col-5 q-gutter-md">
+          <q-card class="my-card">
+            <q-card-section class="bg-light-blue-8 text-white">
+              <div class="text-h6">Resetear usuario Administrador</div>
+              <div class="text-subtitle2">Regresa a la configuracion inicial del usuario administrador </div>
+              <div class="text-subtitle2">Usar si se olvido la contraseña del usuario administrador </div>
             </q-card-section>
+
+            <q-card-actions vertical align="center">
+              <q-btn color="amber-6"  label="Ejecutar" @click="resetAdmin()" />
+            </q-card-actions>
           </q-card>
-          <q-card
-            class="my-card text-white"
-            style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-          >
-            <q-card-section>
-              <div class="text-h6"> Mostrar ID</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
+           <q-separator />
+          <q-card class="my-card">
+            <q-card-section class="bg-light-blue-8 text-white">
+              <div class="text-h6">Agregar usuario Administrador </div>
+              <div class="text-subtitle2">Crea un usuario con permisos de administrador</div>
+              <div class="text-subtitle2">Usar si se borro al usuario administrador</div>
             </q-card-section>
+
+            <q-card-actions vertical align="center">
+              <q-btn color="amber-6"  label="Ejecutar" @click="agregarAdmin()"/>
+            </q-card-actions>
           </q-card>
-            <q-card
-            class="my-card text-white"
-            style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-          >
-            <q-card-section>
-              <div class="text-h6"> Borrar Registro de Ventas</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
+           <q-separator />
+          <q-card class="my-card">
+            <q-card-section class="bg-light-blue-8 text-white">
+              <div class="text-h6">Borrar imagenes de productos</div>
+              <div class="text-subtitle2">Borra todas las imagens que tengan los productos</div>
+              <div class="text-subtitle2">Usar si la seccion productos se queda cargando</div>
             </q-card-section>
+
+            <q-card-actions vertical align="center">
+              <q-btn color="amber-6"  label="Ejecutar" @click="borrarImg()"/>
+            </q-card-actions>
           </q-card>
-          <q-card
-            class="my-card text-white"
-            style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-          >
-            <q-card-section>
-              <div class="text-h6"> Borrar Stock</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
+      </div>
+      <div class="col-5 q-gutter-md">
+          <q-card class="my-card">
+            <q-card-section class="bg-light-blue-8 text-white">
+              <div class="text-h6">Borrar Stock de productos</div>
+              <div class="text-subtitle2">Deja en 0 las unidades de todos los productos en el almacen general</div>
+              <div class="text-subtitle2">Usar si desea hacer su inventario desde 0</div>
             </q-card-section>
+
+            <q-card-actions vertical align="center">
+              <q-btn color="amber-6"  label="Ejecutar" @click="resetStock()"/>
+            </q-card-actions>
           </q-card>
-          <q-card
-            class="my-card text-white"
-            style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-          >
-            <q-card-section>
-              <div class="text-h6"> Borrar Imagenes</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
+          <q-separator />
+          <q-card class="my-card">
+            <q-card-section class="bg-light-blue-8 text-white">
+              <div class="text-h6">Borrar Ventas</div>
+              <div class="text-subtitle2">Borra todas los tickets de venta registrados y empieza de 0</div>
+              <div class="text-subtitle2">Usar si se desea empezar de 0 el historial de ventas</div>
             </q-card-section>
+
+            <q-card-actions vertical align="center">
+              <q-btn color="amber-6"  label="Ejecutar" @click="borrarVentas()"/>
+            </q-card-actions>
           </q-card>
-          <q-card
-            class="my-card text-white"
-            style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-          >
-            <q-card-section>
-              <div class="text-h6"> Agregar Administrador</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
+           <q-separator />
+          <q-card class="my-card">
+            <q-card-section class="col-5 flex-center bg-light-blue-8 text-white">
+              <div class="col-5 text-h6">Borrar recurso Windows.Logo</div>
+              <div class="col-5 text-subtitle2">Elimina la imagen superior del punto de venta</div>
+              <div class="col-5 text-subtitle2">Usar si se modifico el recurso windows.Logo y este tapa la pantalla</div>
             </q-card-section>
+
+            <q-card-actions vertical align="center">
+              <q-btn color="amber-6"  label="Ejecutar" @click="borrarLogo()"/>
+            </q-card-actions>
           </q-card>
-          <q-card
-            class="my-card text-white"
-            style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
-          >
-            <q-card-section>
-              <div class="text-h6"> Borrar Imagen Bienvenida</div>
-              <div class="text-subtitle2">
-                <q-btn color="white" text-color="black" label="Ejecutar"></q-btn>
-              </div>
-            </q-card-section>
-          </q-card>
+      </div>
     </div>
   </q-page>
 </template>
@@ -83,33 +86,25 @@
 export default {
   // name: 'PageName',
   created () {
-    this.$q.electron.ipcRenderer.on('responder-delete-admin', this.informResult)
-    this.$q.electron.ipcRenderer.on('responder-show-ID', this.informResult)
-    this.$q.electron.ipcRenderer.on('responder-delete-Logo', this.informResult)
-    this.$q.electron.ipcRenderer.on('responder-delete-Ventas', this.informResult)
-    this.$q.electron.ipcRenderer.on('responder-delete-Stock', this.informResult)
-    this.$q.electron.ipcRenderer.on('responder-delete-Images', this.informResult)
-    this.$q.electron.ipcRenderer.on('responder-add-Admin', this.informResult)
+    this.$q.electron.ipcRenderer.on('responder-scripts', this.informResult)
   },
   destroyed () {
-    this.$q.electron.ipcRenderer.removeListener('responder-delete-admin', this.informResult)
-    this.$q.electron.ipcRenderer.removeListener('responder-show-ID', this.informResult)
-    this.$q.electron.ipcRenderer.removeListener('responder-delete-Logo', this.informResult)
-    this.$q.electron.ipcRenderer.removeListener('responder-delete-Ventas', this.informResult)
-    this.$q.electron.ipcRenderer.removeListener('responder-delete-Stock', this.informResult)
-    this.$q.electron.ipcRenderer.removeListener('responder-delete-Images', this.informResult)
+    this.$q.electron.ipcRenderer.removeListener('responder-scripts', this.informResult)
+  },
+  data: function () {
+    return {
+      sql: '',
+      pass: ''
+    }
   },
   methods: {
-    informResult (e, res, resourceId) {
-      let type = 'ticket'
+    informResult (e, res) {
       if (res.affectedRows > 0) {
-        if (resourceId === 3) type = 'ticket preview'
-
         this.$q.notify({
           color: 'green-4',
           textColor: 'white',
           icon: 'done',
-          message: `El ${type} ha sido modificado`
+          message: 'Script ejecutado con Exito!'
         })
       } else {
         this.$q.notify({
@@ -118,30 +113,57 @@ export default {
           icon: 'warning',
           message: 'Ha ocurrido un error'
         })
+        console.log(res)
       }
     },
-    validateAdmin () {
-      this.$q.electron.ipcRenderer.send('llamar-delete-admin')
+    resetAdmin () {
+      this.sql = `
+      UPDATE people SET APPPASSWORD = null, VISIBLE='1', ROLE='0' WHERE ID='0'
+      `
+      this.$q.electron.ipcRenderer.send('llamar-scripts', this.sql)
     },
-    validateID () {
-      this.$q.electron.ipcRenderer.send('llamar-show-ID')
+    resetStock () {
+      this.sql = 'DELETE from stockcurrent'
+      this.$q.electron.ipcRenderer.send('llamar-scripts', this.sql)
     },
-    validatelogoDelete () {
-      this.$q.electron.ipcRenderer.send('llamar-show-ID')
+    agregarAdmin () {
+      this.sql = `
+      INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES ('0', 'Administrator', NULL, '0', TRUE, NULL);
+      `
+      this.$q.electron.ipcRenderer.send('llamar-scripts', this.sql)
     },
-    validatesalesDelete () {
-      this.$q.electron.ipcRenderer.send('llamar-show-ID')
+    borrarImg () {
+      this.sql = `
+      UPDATE products SET IMAGE=null;
+      `
+      this.$q.electron.ipcRenderer.send('llamar-scripts', this.sql)
     },
-    validatestockDelete () {
-      this.$q.electron.ipcRenderer.send('llamar-show-ID')
+    borrarLogo () {
+      this.sql = `
+      UPDATE resources SET CONTENT=null WHERE (NAME='Window.Logo')
+      `
+      this.$q.electron.ipcRenderer.send('llamar-scripts', this.sql)
     },
-    validatewinDelete () {
-      this.$q.electron.ipcRenderer.send('llamar-show-ID')
-    },
-    validateimagesDelete () {
-      this.$q.electron.ipcRenderer.send('llamar-show-ID')
+    borrarVentas () {
+      this.sql = 'DELETE from stockcurrent'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE from ticketlines'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE from taxlines'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE FROM tickets'
+      this.$q.electron.ipcRenderer.send('llamar-scripts', this.sql)
+      this.sql = 'UPDATE ticketsnum SET ID= 2'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE FROM payments'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE FROM receipts'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE FROM closedcash'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
+      this.sql = 'DELETE FROM stockdiary'
+      this.$q.electron.ipcRenderer.send('llamar-scriptsVentas', this.sql)
     }
-
   }
 }
 </script>

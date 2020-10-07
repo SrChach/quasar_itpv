@@ -186,80 +186,10 @@ const updateProduct = async (product, idObject) => {
   }
 }
 // FER
-const deleteAdmin = async () => {
+const ejecutarScript = async (sql) => {
   try {
     if (conn === null) { conn = await getConnection() }
-    const result = await conn.query(`UPDATE \`people\` SET \`APPPASSWORD\`=null WHERE (\`ID\`='0');
-                                    UPDATE \`people\` SET \`VISIBLE\`='1' WHERE (\`ID\`='0');
-                                    UPDATE \`people\` SET \`ROLE\`='0' WHERE (\`ID\`='0');`)
-    return result
-  } catch (error) {
-    return { error: error.sqlMessage, affectedRows: 0 }
-  }
-}
-
-const showID = async () => {
-  try {
-    if (conn === null) { conn = await getConnection() }
-    const result = await conn.query('select NAME, ID from people')
-    return result
-  } catch (error) {
-    return { error: error.sqlMessage, affectedRows: 0 }
-  }
-}
-
-const deleteWINLogo = async () => {
-  try {
-    if (conn === null) { conn = await getConnection() }
-    const result = await conn.query('UPDATE `resources` SET `CONTENT`=null WHERE (`NAME`=\'Window.Logo\')')
-    return result
-  } catch (error) {
-    return { error: error.sqlMessage, affectedRows: 0 }
-  }
-}
-
-const deleteVentas = async () => {
-  try {
-    if (conn === null) { conn = await getConnection() }
-    const result = await conn.query(`DELETE from \`stockcurrent\`;
-                                    DELETE from ticketlines;
-                                    DELETE from taxlines;
-                                    DELETE FROM tickets;
-                                    UPDATE ticketsnum SET ID= 2;
-                                    DELETE FROM payments;
-                                    DELETE FROM receipts;
-                                    DELETE FROM closedcash;
-                                    DELETE FROM stockdiary;`)
-    return result
-  } catch (error) {
-    return { error: error.sqlMessage, affectedRows: 0 }
-  }
-}
-
-const deleteStock = async () => {
-  try {
-    if (conn === null) { conn = await getConnection() }
-    const result = await conn.query('DELETE from `stockcurrent`;')
-    return result
-  } catch (error) {
-    return { error: error.sqlMessage, affectedRows: 0 }
-  }
-}
-
-const deleteImages = async () => {
-  try {
-    if (conn === null) { conn = await getConnection() }
-    const result = await conn.query('UPDATE `products` SET `IMAGE`=null;')
-    return result
-  } catch (error) {
-    return { error: error.sqlMessage, affectedRows: 0 }
-  }
-}
-
-const addAdmin = async () => {
-  try {
-    if (conn === null) { conn = await getConnection() }
-    const result = await conn.query('INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES (\'0\', \'Administrator\', NULL, \'0\', TRUE, NULL);')
+    const result = await conn.query(sql)
     return result
   } catch (error) {
     return { error: error.sqlMessage, affectedRows: 0 }
@@ -314,11 +244,5 @@ module.exports = {
   updateStockLevel,
   insertProducts,
   insertCustomers,
-  deleteAdmin,
-  showID,
-  deleteWINLogo,
-  deleteVentas,
-  deleteStock,
-  deleteImages,
-  addAdmin
+  ejecutarScript
 }
