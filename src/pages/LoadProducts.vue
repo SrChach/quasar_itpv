@@ -22,13 +22,13 @@
           </div>
           <q-spinner-hourglass size="md" v-show="isSending" color="secondary"/>
         </div>
-        <div class="col-12 col-sm-12 q-pa-md q-gutter-sm">
-          <p align="center">
+        <div v-if="productos.length > 0" class="col-12 col-sm-12 q-pa-md q-gutter-sm">
+         <p align="center">
             <b class="text-h6 text-primary">3.-</b> Presione el boton "CARGAR DATOS" para iniciar la carga masiva a iTPV 3.0
             <br><br>
             <q-btn v-if="!isSending" color="primary" label="Cargar datos" icon="add_circle" @click="insertData()" />
             <span v-else>Esperando a que se inserten los productos</span>
-          </p>
+         </p>
         </div>
       </div>
     </q-page>
@@ -49,11 +49,9 @@
 /** Utils */
 import { cleanExcelData } from '../utils/process-array-excel.js'
 import fs from 'fs'
-
 /** Components */
 import load from '../components/ExcelComponent'
 import excelErrors from '../components/ExcelErrors'
-
 export default {
   name: 'PageIndex',
   data: function () {
@@ -101,12 +99,10 @@ export default {
     copyTemplate () {
       const bookRoute = __statics + '/excel/template-productos.xlsx'
       const copyTo = this.getSaveDirectory('template-original-productos.xlsx')
-
       if (fs.existsSync(copyTo)) {
         this.$q.notify({ type: 'negative', message: `Ya existe un archivo en ${copyTo}. Cambie o mueva ese archivo para poder descargar la plantilla` })
         return
       }
-
       fs.copyFile(bookRoute, copyTo, (err) => {
         if (err) {
           this.$q.notify({ type: 'negative', message: `oops! No se pudo guardar. Error: ${err}` })
@@ -138,7 +134,6 @@ export default {
       /** For template configuration */
       this.isSending = false
       this.errors = res
-
       this.$q.notify({
         type: 'info',
         message: 'Productos cargados. Cualquier error le será notificado'

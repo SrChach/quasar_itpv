@@ -15,7 +15,7 @@
         </q-card-section>
 
         <q-card-section>
-          <q-input label="contraseña" v-model="pass"/>
+          <q-input label="contraseña" v-model="pass" type="password"/>
         </q-card-section>
       </q-card>
     </div>
