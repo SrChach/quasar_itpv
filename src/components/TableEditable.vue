@@ -16,6 +16,19 @@
           </template>
         </q-input>
       </div>
+      <div class="col-10">
+        {{ forcedToHide }}
+        <q-select
+          filled
+          v-model="forcedToHide"
+          multiple
+          use-chips
+          hide-selected
+          :options="hiddableList"
+          label="Columnas a ocultar"
+          style="width: 15em"
+        />
+      </div>
     </div>
     <q-scroll-area
       horizontal
@@ -145,7 +158,9 @@ export default {
       totalPages: 0,
       currentPage: 1,
       lastOffset: 0,
-      newItemsPerPage: 20
+      newItemsPerPage: 20,
+      hiddableList: [],
+      forcedToHide: null
     }
   },
 
@@ -160,6 +175,8 @@ export default {
     /** Initialize page */
     this.$q.electron.ipcRenderer.send('call-get-products', undefined, this.currentPage - 1, this.itemsPerPage)
     this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage)
+
+    this.hiddableList = this.getHiddables(this.showingColumns)
   },
 
   beforeDestroy () {
@@ -211,7 +228,12 @@ export default {
           if (field._id) inside._id = true
           if (field.table) inside.table = field.table
           if (field.type) inside.type = field.type
+          /** Permanent hidden fields */
           if (field.hidden) inside.hidden = field.hidden
+
+          /** Optionally hidden fields */
+          if (field.hiddable) inside.hiddable = field.hiddable
+
           /** Condicion rara */
           if (field.accepted !== undefined) {
             const displaying = field.accepted[inside.original]
@@ -225,6 +247,12 @@ export default {
       })
 
       return cleanedData
+    },
+
+    getHiddables (configColumns) {
+      return configColumns
+        .filter(el => el.hiddable === true)
+        .map(el => el.name)
     },
 
     list_products (event, res) {

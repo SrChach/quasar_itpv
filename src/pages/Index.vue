@@ -13,7 +13,7 @@
         <squared-route title="Cargar Clientes" subhead="Carga masiva de Clientes" to="customers"/>
       </div>
       <div class="col-4">
-        <squared-route title="Editar Productos" subhead="Edición Rapida de Productos" to="products"/>
+        <squared-route title="Editar Productos" subhead="Edición Rápida de Productos" to="products"/>
       </div>
       <div class="col-4">
         <squared-route title="Personalizar Ticket" subhead="Personalizar Ticket de Venta" to="tickets"/>
