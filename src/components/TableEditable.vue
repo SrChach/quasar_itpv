@@ -16,20 +16,20 @@
           </template>
         </q-input>
       </div>
-      <div class="col-10">
+    </div>
+    <div class="row items-center justify-center">
+      <div class="col-5">
         <q-select
           filled
           v-model="forcedToHide"
           multiple
-          use-chips
           hide-selected
+          use-chips
+          @input="setHidden"
           :options="hiddableList"
           label="Columnas a ocultar"
-          style="width: 15em"
+          style="width: 100%"
         />
-        <button class="btn" @click="setHidden">
-          ocultar (incompleto)
-        </button>
       </div>
     </div>
     <q-scroll-area
@@ -194,19 +194,33 @@ export default {
 
   methods: {
     setHidden () {
-      this.rendering = this.rendering.map(row => {
-        return row.map(cell => {
-          if (this.hiddableList.includes(cell.name)) {
-            cell.hidden = true
+      const toHide = []
+      const toUnHide = []
+      this
+        .configColumns
+        .forEach((headers, index) => {
+          if (headers.hiddable === true) {
+            if (this.forcedToHide.includes(headers.name)) {
+              toHide.push(index)
+            } else {
+              toUnHide.push(index)
+            }
           }
-          return cell
         })
-      })
 
-      this.forcedToHide.forEach(hidding => {
-        const hiddingIndex = this.configColumns.findIndex(v => v.name === hidding)
-        this.configColumns[hiddingIndex].hidden = true
-      })
+      /** Seteamos visibilidad de los headers */
+      toHide.forEach(hiding => { this.$set(this.configColumns[hiding], 'hidden', true) })
+      toUnHide.forEach(unHiding => { this.$set(this.configColumns[unHiding], 'hidden', false) })
+
+      /** Seteamos visibilidad de las rows */
+      for (let rowNumber = 0; rowNumber < this.rendering.length; rowNumber++) {
+        toHide.forEach(hiding => {
+          this.$set(this.rendering[rowNumber][hiding], 'hidden', true)
+        })
+        toUnHide.forEach(unHiding => {
+          this.$set(this.rendering[rowNumber][unHiding], 'hidden', false)
+        })
+      }
     },
 
     setTotalPages (e, res) {
