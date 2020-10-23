@@ -146,6 +146,7 @@ const insertProducts = async (products = [], fromExcel = false) => {
        */
       if (units !== null) updateStockCurrent(productId, units)
       if (min !== null || max !== null) updateStockLevel(productId, min, max)
+      updateProductsCat(productId)
     }
   }
 
@@ -207,7 +208,28 @@ const updateStockCurrent = async (productId, units) => {
   const check = await conn.query('SELECT * FROM stockcurrent WHERE PRODUCT = ? AND LOCATION = 0', [productId])
   try {
     let result = null
-    if (check.length > 0) { result = await conn.query('UPDATE stockcurrent SET UNITS = ? WHERE PRODUCT = ? AND LOCATION = 0', [units, productId]) } else { result = await conn.query('INSERT INTO stockcurrent SET ?', { LOCATION: 0, PRODUCT: productId, UNITS: units }) }
+    if (check.length > 0) {
+      result = await conn.query('UPDATE stockcurrent SET UNITS = ? WHERE PRODUCT = ? AND LOCATION = 0', [units, productId])
+    } else {
+      result = await conn.query('INSERT INTO stockcurrent SET ?', { LOCATION: 0, PRODUCT: productId, UNITS: units })
+    }
+
+    return result
+  } catch (error) {
+    return { error: error.sqlMessage, affectedRows: 0 }
+  }
+}
+
+const updateProductsCat = async (productId) => {
+  if (conn === null) conn = await getConnection()
+  const check = await conn.query('SELECT * FROM products_cat WHERE PRODUCT = ?', [productId])
+  try {
+    let result = null
+    if (check.length > 0) {
+      result = await conn.query('UPDATE products_cat SET PRODUCT = ? WHERE PRODUCT = ?', [productId, productId])
+    } else {
+      result = await conn.query('INSERT INTO products_cat SET ?', { PRODUCT: productId })
+    }
 
     return result
   } catch (error) {
