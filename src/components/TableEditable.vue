@@ -17,7 +17,6 @@
         </q-input>
       </div>
       <div class="col-10">
-        {{ forcedToHide }}
         <q-select
           filled
           v-model="forcedToHide"
@@ -28,6 +27,9 @@
           label="Columnas a ocultar"
           style="width: 15em"
         />
+        <button class="btn" @click="setHidden">
+          ocultar (incompleto)
+        </button>
       </div>
     </div>
     <q-scroll-area
@@ -38,7 +40,7 @@
       <q-markup-table class="col-11" style="margin: 0 5px;">
         <thead>
           <tr>
-            <th v-for="(header, index) in showingColumns" v-show="!header.hidden" :key="index" class="text-left">
+            <th v-for="(header, index) in configColumns" v-show="!header.hidden" :key="index" class="text-left">
               {{ (header.header) ? header.header : header.name }}
             </th>
             <th class="text-right">Actions</th>
@@ -160,7 +162,8 @@ export default {
       lastOffset: 0,
       newItemsPerPage: 20,
       hiddableList: [],
-      forcedToHide: null
+      forcedToHide: [],
+      configColumns: []
     }
   },
 
@@ -176,7 +179,9 @@ export default {
     this.$q.electron.ipcRenderer.send('call-get-products', undefined, this.currentPage - 1, this.itemsPerPage)
     this.$q.electron.ipcRenderer.send('call-get-products-paginator', this.itemsPerPage)
 
-    this.hiddableList = this.getHiddables(this.showingColumns)
+    this.configColumns = this.showingColumns
+    this.hiddableList = this.getHiddables(this.configColumns)
+    // Codebar, name, category, taxcat
   },
 
   beforeDestroy () {
@@ -188,6 +193,22 @@ export default {
   },
 
   methods: {
+    setHidden () {
+      this.rendering = this.rendering.map(row => {
+        return row.map(cell => {
+          if (this.hiddableList.includes(cell.name)) {
+            cell.hidden = true
+          }
+          return cell
+        })
+      })
+
+      this.forcedToHide.forEach(hidding => {
+        const hiddingIndex = this.configColumns.findIndex(v => v.name === hidding)
+        this.configColumns[hiddingIndex].hidden = true
+      })
+    },
+
     setTotalPages (e, res) {
       if (res.data !== null) {
         this.totalPages = res.data.totalPages
@@ -257,7 +278,7 @@ export default {
 
     list_products (event, res) {
       if (res.data !== null) {
-        this.rendering = this.cleanData(res.data, this.showingColumns)
+        this.rendering = this.cleanData(res.data, this.configColumns)
       } else {
         this.$q.notify({ type: 'negative', message: res.error })
       }
