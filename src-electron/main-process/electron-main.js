@@ -1,6 +1,6 @@
 import { app, BrowserWindow, nativeTheme, ipcMain, shell } from 'electron'
 import {
-  getProducts, getTotalPages, checkAdminUser, insertTicket, updateProduct,
+  checkDBConnection, getProducts, getTotalPages, checkAdminUser, insertTicket, updateProduct,
   updateStockCurrent, updateStockLevel, insertProducts, insertCustomers, ejecutarScript
 } from '../queries.js'
 
@@ -69,6 +69,11 @@ app.on('activate', () => {
 })
 
 /** Code for managing SQL requests and responses */
+ipcMain.on('call-check-db', async (event) => {
+  const result = await checkDBConnection()
+  event.reply('response-check-db', result)
+})
+
 ipcMain.on('call-get-products-paginator', async (event, itemsPerPage = 5, search) => {
   search = (!search) ? undefined : search
   const result = await getTotalPages(itemsPerPage, search)

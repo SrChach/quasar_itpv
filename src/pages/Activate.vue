@@ -39,10 +39,21 @@ export default {
   data () {
     return {
       code: '',
-      name: ''
+      name: '',
+      existsDBConnection: false
     }
   },
+  created () {
+    this.$q.electron.ipcRenderer.on('response-check-db', this.checkDBConnection)
+    this.$q.electron.ipcRenderer.send('call-check-db')
+  },
+  beforeDestroy () {
+    this.$q.electron.ipcRenderer.removeListener('response-check-db', this.checkDBConnection)
+  },
   methods: {
+    checkDBConnection (event, response) {
+      this.existsDBConnection = response
+    },
     async checkSerial (code = '', name = '') {
       try {
         const response = await fetch(`http://smgpuntosdeventa.net/itpv_validate/?code=${code}&name=${name}`)
@@ -54,6 +65,14 @@ export default {
       }
     },
     async activateSerial () {
+      if (!this.existsDBConnection) {
+        this.$q.electron.ipcRenderer.send('call-check-db')
+        this.$q.notify({
+          type: 'negative',
+          message: 'Comprueba antes que tu iTPV esté abierto, y vuelve a intentarlo'
+        })
+        return
+      }
       const res = await this.checkSerial(this.code, this.name)
       if (res.error != null) {
         this.$q.notify({ type: 'negative', message: `Ha ocurrido un error: ${res.error}` })

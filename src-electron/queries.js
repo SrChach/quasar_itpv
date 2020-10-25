@@ -17,6 +17,15 @@ function successMessage (data) {
   return { data: data, error: null }
 }
 
+const checkDBConnection = async () => {
+  try {
+    if (conn === null) { conn = await getConnection() }
+    await conn.query('SELECT 1+1 AS result')
+    return true
+  } catch (error) {
+      return false
+  }
+}
 
 const getTotalPages = async (itemsPerPage = 5, search = '.*') => {
   try {
@@ -256,6 +265,7 @@ const updateStockLevel = async (productId, min, max) => {
 }
 
 module.exports = {
+  checkDBConnection,
   getProducts,
   getTotalPages,
   insertProduct,
