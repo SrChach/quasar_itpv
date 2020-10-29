@@ -7,7 +7,7 @@
         </div>
         <div class="col-10 q-mb-md q-gutter-sm">
           <p align="center">
-            <b class="text-h6 text-primary">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
+            <b class="text-h6 text-primary">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados. La plantilla se descargara en su escritorio&nbsp;
             <br><br>
             <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
             <br>
@@ -63,8 +63,8 @@ export default {
       errors: [],
       saveTo: 'corregir_clientes_itpv.xlsx',
       headerConfig: [
-        { match: val => /rfc/i.test(val), databaseName: 'ID', col: 'RFC' },
-        { match: val => /clave(.*)busqueda/i.test(val), databaseName: 'SEARCHKEY', col: 'CLAVE DE BUSQUEDA' },
+        { match: val => /rfc/i.test(val), databaseName: 'TAXID', col: 'RFC' },
+        { match: val => /clave(.*)busqueda/i.test(val), databaseName: 'ID', col: 'CLAVE DE BUSQUEDA' },
         { match: val => /nombre(.*)cliente/i.test(val), databaseName: 'NAME', col: 'NOMBRE DEL CLIENTE' },
         { match: val => /tarjeta/i.test(val), databaseName: 'CARD', col: 'TARJETA' },
         { match: val => /deuda(.*)m[aá]xima/i.test(val), databaseName: 'MAXDEBT', changes: val => Number(val), col: 'DEUDA MAXIMA' },
@@ -80,6 +80,7 @@ export default {
         { match: val => /apellidos/i.test(val), databaseName: 'LASTNAME', col: 'APELLIDOS' },
         { match: val => /email/i.test(val), databaseName: 'EMAIL', col: 'EMAIL' },
         { match: val => /telefono/i.test(val), databaseName: 'PHONE', col: 'TELEFONO' },
+        { match: val => /precio/i.test(val), databaseName: 'PRICE_SELECTED', default: 0, changes: val => Number(val - 1), col: 'TIPO PRECIO' },
         { match: val => /notas/i.test(val), databaseName: 'NOTES', col: 'NOTAS' }
       ]
     }
@@ -114,7 +115,7 @@ export default {
     },
     setProductsData (data) {
       const allInserts = cleanExcelData(data, this.headerConfig)
-      allInserts.forEach(obj => { obj.TAXID = obj.ID })
+      allInserts.forEach(obj => { obj.SEARCHKEY = obj.ID })
       this.clientes = allInserts
       this.errors = []
     },

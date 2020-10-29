@@ -5,7 +5,7 @@
         <div class="col-10 q-mb-md">
           <h4 class="text-primary q-mb-sm" align="center"><q-icon name="tapas"/> PRODUCTOS - CARGA MASIVA</h4>
           <p align="center">
-            <b class="text-h6 text-primary">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados&nbsp;
+            <b class="text-h6 text-primary">1.-</b> Descargue la plantilla ejemplo y llene los datos solicitados. La plantilla se descargara en su escritorio&nbsp;
             <br><br>
             <q-btn outline label="Descargar" color="primary" icon="save" @click="copyTemplate()"/>
             <br>
