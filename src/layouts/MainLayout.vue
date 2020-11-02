@@ -32,12 +32,14 @@
       content-class="bg-grey-1"
     >
       <q-list>
-        <q-item-label
-          header
-          class="text-grey-8"
-        >
-          Essential Links
-        </q-item-label>
+        <q-item tag="a" @click="openUrl('https://www.facebook.com/mexastack')" clickable>
+          <q-item-section class="text-grey-8">Desarrollado por Mexa Stack</q-item-section>
+          <q-item-section top avatar>
+            <q-avatar>
+              <img :src="require('../../public/icons/mexa-stack-blue.png')">
+            </q-avatar>
+          </q-item-section>
+        </q-item>
         <EssentialLink
           v-for="link in essentialLinks"
           :key="link.title"
@@ -47,7 +49,7 @@
           bottom: 0;
           width: 100%;
           height: auto;">
-          <q-item tag="a" @click="openVideo">
+          <q-item tag="a" @click="openUrl('https://www.youtube.com/channel/UCQGv7n_C4mxSmmJarh-w9kg')">
             <q-item-section avatar>
               <q-icon name="play_circle_filled" />
             </q-item-section>
@@ -82,8 +84,8 @@ export default {
       this.$store.commit('security/logout')
       this.$router.push('/unauthenticated')
     },
-    openVideo () {
-      this.$q.electron.ipcRenderer.send('open-url', 'https://www.youtube.com/channel/UCQGv7n_C4mxSmmJarh-w9kg')
+    openUrl (url) {
+      this.$q.electron.ipcRenderer.send('open-url', url)
     }
   },
 
