@@ -68,7 +68,7 @@ export default {
         { match: val => /nombre(.*)cliente/i.test(val), databaseName: 'NAME', col: 'NOMBRE DEL CLIENTE' },
         { match: val => /tarjeta/i.test(val), databaseName: 'CARD', col: 'TARJETA' },
         { match: val => /deuda(.*)m[aá]xima/i.test(val), databaseName: 'MAXDEBT', changes: val => Number(val), col: 'DEUDA MAXIMA' },
-        { match: val => /monedero(.*)activo/i.test(val), default: 0, databaseName: 'MONEDERO_ACTIVO', changes: val => (/(.*)si(.*)/i.test(val)) ? 1 : 0, col: 'MONEDERO ACTIVO' },
+        { match: val => /monedero/i.test(val), default: 0, databaseName: 'MONEDERO_ACTIVO', changes: val => (/(.*)si(.*)/i.test(val)) ? 1 : 0, col: 'MONEDERO ACTIVO' },
         { match: val => /calle/i.test(val), databaseName: 'ADDRESS', col: 'CALLE' },
         { match: val => /numero/i.test(val), databaseName: 'ADDRESS2', col: 'NUMERO' },
         { match: val => /codigo(.*)postal/i.test(val), databaseName: 'POSTAL', col: 'CODIGO POSTAL' },

@@ -49,7 +49,7 @@
           bottom: 0;
           width: 100%;
           height: auto;">
-          <q-item tag="a" @click="openUrl('https://www.youtube.com/channel/UCQGv7n_C4mxSmmJarh-w9kg')">
+          <q-item tag="a" @click="openUrl('https://smgpuntosdeventa.com/itpv-tools')">
             <q-item-section avatar>
               <q-icon name="play_circle_filled" />
             </q-item-section>
