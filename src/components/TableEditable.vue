@@ -4,7 +4,9 @@
       <div class="col-10 q-mb-md">
         <h4 class="text-primary q-mb-sm"><q-icon name="fact_check"/> Edición Rápida de Productos</h4>
       </div>
-      <div class="col-10">
+    </div>
+    <div class="row justify-center">
+      <div class="col-7">
         <q-input
           v-model="search"
           label="Busca por nombre, categoría, código o referencia"
@@ -16,9 +18,8 @@
           </template>
         </q-input>
       </div>
-    </div>
-    <div class="row items-center justify-center">
-      <div class="col-5">
+      <div class="col-2"></div>
+      <div class="col-3">
         <q-select
           filled
           v-model="forcedToHide"
@@ -28,12 +29,11 @@
           @input="setHidden"
           :options="hiddableList"
           label="Columnas a ocultar"
-          style="width: 100%"
         />
       </div>
     </div>
+
     <q-scroll-area
-      horizontal
       style="height: 50vh; width: 90vw;"
       class="row justify-center bg-grey-1 rounded-borders"
     >
@@ -128,13 +128,6 @@
         icon-next="fast_forward"
       >
       </q-pagination>
-      <q-select
-        label="Registros por página"
-        filled
-        @input="changeItemsPerPage()"
-        v-model="newItemsPerPage"
-        :options="[3, 5, 10, 15, 20, 25, 50, 100]"
-      />
     </div>
   </div>
 </template>
@@ -156,11 +149,11 @@ export default {
       rendering: [],
       blocked: [],
       search: '',
-      itemsPerPage: 20,
+      itemsPerPage: 100,
       totalPages: 0,
       currentPage: 1,
       lastOffset: 0,
-      newItemsPerPage: 20,
+      newItemsPerPage: 100,
       hiddableList: [],
       forcedToHide: [],
       configColumns: []

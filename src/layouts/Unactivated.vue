@@ -4,12 +4,6 @@
     <!-- The Footer -->
     <q-footer>
       <q-tabs switch-indicator>
-        <q-route-tab
-          icon="login"
-          to="/unauthenticated"
-          replace
-          label="Logo irá Aqui"
-        />
       </q-tabs>
     </q-footer>
 
