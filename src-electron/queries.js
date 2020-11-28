@@ -93,7 +93,7 @@ const checkAdminUser = async (pass = '') => {
       FROM people
       WHERE
         ID = 0
-        AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL )
+        AND ( APPPASSWORD='sha1:${encryped}' OR APPPASSWORD IS NULL OR APPPASSWORD='empty:' OR APPPASSWORD='' OR APPPASSWORD='sha1:' )
     `)
 
     // eslint-disable-next-line eqeqeq
